@@ -6,8 +6,6 @@ import Server.DataBaseServer;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -48,8 +46,11 @@ public class MainWindow extends JFrame {
         this.server = server;
         this.mainController = controller;
 
+        addPeople.setMinimumSize(new Dimension(100,20));
+        addDeclaration.setMinimumSize(new Dimension(100,20));
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1400, 500));
+        setMinimumSize(new Dimension(1370, 480));
         setLayout(new GridBagLayout());
 
 
@@ -74,7 +75,7 @@ public class MainWindow extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 4;
-        constraints.gridheight = 2;
+        constraints.gridheight = 4;
         add(scrollTable, constraints);
 
         constraints = new GridBagConstraints();
@@ -88,6 +89,7 @@ public class MainWindow extends JFrame {
         add(categoryFilter, constraints);
 
         constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.NORTH;
         constraints.gridx = 5;
         constraints.gridy = 3;
         add(editTrip, constraints);
@@ -248,13 +250,10 @@ public class MainWindow extends JFrame {
         clientsTable.setModel(tableModel);
 
         ListSelectionModel listSelectionModel = clientsTable.getSelectionModel();
-        listSelectionModel.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent listSelectionEvent) {
-                isTableSelection = true;
-                int selectionRow = listSelectionEvent.getLastIndex(); // потому что он совпадает с выбранной строкой
-                selectionID = Integer.parseInt(tableModel.getValueAt(selectionRow, 0).toString());
-            }
+        listSelectionModel.addListSelectionListener(listSelectionEvent -> {
+            isTableSelection = true;
+            int selectionRow = listSelectionEvent.getLastIndex(); // потому что он совпадает с выбранной строкой
+            selectionID = Integer.parseInt(tableModel.getValueAt(selectionRow, 0).toString());
         });
 
         // Setting table

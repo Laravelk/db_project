@@ -1,7 +1,9 @@
 package Server;
 
 import Data.AirplaneData;
+import Data.CargoData;
 import Data.ExcursionData;
+import Data.TripData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +39,29 @@ public class ConvertData {
             table.add(row);
         }
         return table;
+    }
+
+    String convertDate(String dateIn) {
+        String str = dateIn.substring(0, 10);
+        String []d = str.split("-");
+        return d[2] + "." + d[1] + "." + d[0];
+    }
+
+    TripData parse_trip_one_data(ResultSet resultSet) throws SQLException {
+        assert null != resultSet;
+        resultSet.next();
+        return new TripData(resultSet.getInt(1), resultSet.getString(2),
+                                    resultSet.getString(3), resultSet.getInt(4), resultSet.getInt(5));
+    }
+
+    LinkedList<CargoData> getCargoData(ResultSet resultSet) throws SQLException {
+        assert null != resultSet;
+        LinkedList<CargoData> linkedList = new LinkedList<>();
+//        while (resultSet.next()) {
+//            linkedList.add(new CargoData(resultSet.getString(1), resultSet.getString(2),
+//                    resultSet.getString(3), resultSet.getInt(4), resultSet.getInt()))
+//        }
+        return  linkedList;
     }
 
     private String getAgencyNameByID(int id) {

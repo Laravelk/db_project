@@ -20,7 +20,6 @@ public class TripController {
     private final DataBaseServer server;
     private TripModel tripModel;
 
-    private TripView view = new TripView();
     private ExcursionController excursionController;
     private HotelController hotelController;
     private FlightController flightController;

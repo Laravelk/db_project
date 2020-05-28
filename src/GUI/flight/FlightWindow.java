@@ -13,6 +13,7 @@ public class FlightWindow extends JFrame {
     private final JButton flightPrev = new JButton("Prev Flight");
     private final JButton prevButton = new JButton("Prev");
     private final JButton nextButton = new JButton("Next");
+    private final JButton okButton = new JButton("Ok");
 
     private JLabel countOfPageLabel;
     private ComboFlightVariants comboFlightVariants;
@@ -22,9 +23,9 @@ public class FlightWindow extends JFrame {
 
     FlightWindow(FlightController controller, String dateInString,
                  String dateOutString, int countOfPage,
-                 int PAINT_VARIANT_ON_PAGE)
+                 int PAINT_VARIANT_ON_PAGE, boolean isAddNew)
             throws ParseException {
-        setMinimumSize(new Dimension(1200, 450));
+        setMinimumSize(new Dimension(1200, 600));
 
         setLayout(new GridBagLayout());
 
@@ -59,14 +60,21 @@ public class FlightWindow extends JFrame {
             flightNext.setEnabled(false);
         }
 
-        constraints = new GridBagConstraints();
-        constraints.gridy = 4;
-        constraints.gridx = 0;
-        add(prevButton, constraints);
+        if (isAddNew) {
+            constraints = new GridBagConstraints();
+            constraints.gridy = 4;
+            constraints.gridx = 0;
+            add(prevButton, constraints);
 
-        constraints.gridy = 4;
-        constraints.gridx = 3;
-        add(nextButton, constraints);
+            constraints.gridy = 4;
+            constraints.gridx = 3;
+            add(nextButton, constraints);
+        } else {
+            constraints = new GridBagConstraints();
+            constraints.gridy = 4;
+            constraints.gridx = 0;
+            add(okButton, constraints);
+        }
     }
 
     int getCountOfPage() {
@@ -91,6 +99,10 @@ public class FlightWindow extends JFrame {
 
     JLabel getCountOfPageLabel() {
         return countOfPageLabel;
+    }
+
+    JButton getOkButton() {
+        return okButton;
     }
 
     ComboFlightVariants getComboFlight() {

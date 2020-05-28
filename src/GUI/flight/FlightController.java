@@ -2,6 +2,7 @@ package GUI.flight;
 
 import Data.CargoData;
 import GUI.Controller.TripController;
+import GUI.trip.TripWindowController;
 import Server.DataBaseServer;
 
 import java.awt.event.ActionEvent;
@@ -29,7 +30,7 @@ public class FlightController {
         countOfPage = (int) Math.ceil((double) model.getTicketData().size() / PAINT_VARIANT_ON_PAGE);
 
         try {
-            view = new FlightWindow(this, dateIn, dateOut, countOfPage, PAINT_VARIANT_ON_PAGE);
+            view = new FlightWindow(this, dateIn, dateOut, countOfPage, PAINT_VARIANT_ON_PAGE, true);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -65,20 +66,69 @@ public class FlightController {
             view.dispose();
         });
 
-        view.getFlightPrev().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                view.getFlightNext().setEnabled(true);
-                numberOfPage--;
-                view.getCountOfPageLabel().setText("Number: " + (numberOfPage + 1) + " of " + count_of_page);
-                view.getComboFlight().insert_from_to(view.getComboFlight().parse_flight_data(model.getTicketData()),
-                        numberOfPage * PAINT_VARIANT_ON_PAGE ,
-                        (numberOfPage + 1) * PAINT_VARIANT_ON_PAGE);
-                if (0 == numberOfPage) {
-                    view.getFlightPrev().setEnabled(false);
-                }
+        view.getFlightPrev().addActionListener(actionEvent -> {
+            view.getFlightNext().setEnabled(true);
+            numberOfPage--;
+            view.getCountOfPageLabel().setText("Number: " + (numberOfPage + 1) + " of " + count_of_page);
+            view.getComboFlight().insert_from_to(view.getComboFlight().parse_flight_data(model.getTicketData()),
+                    numberOfPage * PAINT_VARIANT_ON_PAGE ,
+                    (numberOfPage + 1) * PAINT_VARIANT_ON_PAGE);
+            if (0 == numberOfPage) {
+                view.getFlightPrev().setEnabled(false);
             }
         });
+    }
+
+    public FlightController(DataBaseServer server, TripWindowController controller,
+                            String dateIn, String dateOut, int weight) {
+        this.server = server;
+        model = new FlightModel(server, dateIn, dateOut, weight);
+
+        final int PAINT_VARIANT_ON_PAGE = 3;
+        countOfPage = (int) Math.ceil((double) model.getTicketData().size() / PAINT_VARIANT_ON_PAGE);
+
+        try {
+            view = new FlightWindow(this, dateIn, dateOut, countOfPage, PAINT_VARIANT_ON_PAGE, false);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        view.getFlightNext().addActionListener(actionEvent -> {
+            view.getFlightPrev().setEnabled(true);
+            numberOfPage++;
+            view.getCountOfPageLabel().setText("Number: " + (numberOfPage + 1)
+                    + " of " + countOfPage);
+            view.getComboFlight().insert_from_to(
+                    view.getComboFlight().parse_flight_data(model.getTicketData()),
+                    numberOfPage * PAINT_VARIANT_ON_PAGE,
+                    (numberOfPage + 1) * PAINT_VARIANT_ON_PAGE);
+            if (countOfPage == numberOfPage + 1) {
+                view.getFlightNext().setEnabled(false);
+            }
+        });
+
+        view.getFlightPrev().addActionListener(actionEvent -> {
+            view.getFlightNext().setEnabled(true);
+            numberOfPage--;
+            view.getCountOfPageLabel().setText("Number: " + (numberOfPage + 1) + " of " + countOfPage);
+            view.getComboFlight().insert_from_to(view.getComboFlight().parse_flight_data(model.getTicketData()),
+                    numberOfPage * PAINT_VARIANT_ON_PAGE ,
+                    (numberOfPage + 1) * PAINT_VARIANT_ON_PAGE);
+            if (0 == numberOfPage) {
+                view.getFlightPrev().setEnabled(false);
+            }
+        });
+
+        view.getOkButton().addActionListener(actionEvent -> {
+            final int NO_CHOSEN = -1;
+            int chosen = view.getComboFlight().isChosen();
+            if (NO_CHOSEN != chosen) {
+                controller.setNewTicket(view.getComboFlight().getTicket(chosen));
+                view.dispose();
+            } });
+
+        view.setVisible(true);
     }
 
     public FlightModel getModel() {

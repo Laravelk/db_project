@@ -401,6 +401,47 @@ public class DataBaseServer {
         return 0;
     }
 
+    /* @return don't ready */
+    public LinkedList<CargoData> getCargoDataFromTrip(int tripID) {
+        LinkedList<CargoData> cargoList = new LinkedList<>();
+        try {
+            String sql = "select * from " + "CARGO_TOURIST " + "WHERE ID_TRIP = " + tripID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
+    /* @return вес груза в определенном путешествии */
+    public int getWeightCargoByTripId(int tripID) {
+        int weight = 0;
+        try {
+            String sql = "select SUM(WEIGHT * COUNT) FROM TRIP INNER JOIN CARGO_TOURIST ON TRIP.ID = CARGO_TOURIST.ID_TRIP\n" +
+                    "       INNER JOIN CARGO ON CARGO_TOURIST.ID_CARGO = CARGO.ID INNER JOIN STATEMENT ON CARGO.ID_STATEMENT = STATEMENT.ID\n" +
+                    "        WHERE TRIP.ID = " +  tripID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            if (result.next()) {
+                weight = result.getInt(1);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return weight;
+    }
+
+
+
     /* @return flight by params */
     public LinkedList<FlightData> getFlightDataWithGoodParameters(String flightDate, int weight, int MaybeCargo) {
         LinkedList<FlightData> list = new LinkedList<>();
@@ -473,6 +514,7 @@ public class DataBaseServer {
         return null;
     }
 
+    /* @return clientTripById */
     public Vector<Vector<String>> getClientsTrip(int clientID) {
         try {
             String sql = "select * from " + "TRIP" + " WHERE ID_CLIENT = " + clientID;
@@ -489,6 +531,8 @@ public class DataBaseServer {
         return null;
     }
 
+
+    /* @return all trips */
     public Vector<Vector<String>> getTrips() {
         try {
             String sql = "select * from " + "TRIP";
@@ -504,6 +548,25 @@ public class DataBaseServer {
         }
         return null;
     }
+
+    /* @return trip by client id */
+    public TripData getTripDataByID(int id) {
+        try {
+            String sql = "select * from " + "TRIP" + " WHERE ID = " + id;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            return convertData.parse_trip_one_data(result);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
+    /* */
 
     /* @return flight data
      *  parse flight data from result */
@@ -529,16 +592,164 @@ public class DataBaseServer {
     /* main function for insert new trip */
     public void insertTrip(LinkedList<CargoData> cargoList, TicketData ticket,
                            ClientData clientData, LinkedList<ExcursionData> excursionList, HotelBookingInfo hotelInfo) {
-//        System.out.println("start insert");
         insertTripAndHotel(hotelInfo, clientData);
-//        System.out.println("after hotel");
         insertCargoAndChoseFlight(cargoList, ticket, clientData);
-//        System.out.println("after cargo");
         insertPassenger(ticket, clientData);
-//        System.out.println("after passenger");
         insertExcursion(excursionList, clientData);
-//        System.out.println("it's all");
     }
+
+/* удаляем номера рейсов, которыми полетит груз клиента в данном путешествии */
+    public void removeTicketToFlightByTrip(int tripID, boolean isIn) {
+        String nameField;
+        if (isIn) {
+            nameField =  "ID_FLIGHT_IN";
+        } else {
+            nameField = "ID_FLIGHT_OUT";
+        }
+        try {
+            String sql = "select FLIGHT.ID FROM TRIP INNER JOIN CARGO_TOURIST ON TRIP.ID = CARGO_TOURIST.ID_TRIP\n" +
+                    "    INNER JOIN CARGO ON CARGO_TOURIST.ID_CARGO = CARGO.ID INNER JOIN FLIGHT\n" +
+                    "        ON CARGO." + nameField + " = FLIGHT.ID WHERE TRIP.ID = + " + tripID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void changeFlightClientsInformation(int tripID, int clientID, TicketData ticketData) {
+        LinkedList<FlightData> in = ticketData.getIn();
+        LinkedList<FlightData> out = ticketData.getOut();
+        int passengerFlightID = 0;
+        int cargoFlightID = 0;
+        String date = "";
+
+
+
+        for (FlightData data : in) {
+            if (data.getAirplaneData().isCargoPlane()) {
+                cargoFlightID = data.getID();
+            } else {
+                passengerFlightID = data.getID();
+            }
+            date = convertData.convertDate(data.getData());
+        }
+
+        LinkedList<Integer> cargos = getCargoID(tripID, date, true);
+            if (-1 == cargoFlightID) {
+                cargoFlightID = passengerFlightID;
+        }
+
+        if (null != cargos) {
+            changeFlightCargo(cargoFlightID, cargos, true);
+        }
+
+        System.out.println("DATE IN " + date);
+
+        changePeopleTicket(tripID, passengerFlightID, date);
+
+        for (FlightData data : out) {
+            if (data.getAirplaneData().isCargoPlane()) {
+                cargoFlightID = data.getID();
+            } else {
+                passengerFlightID = data.getID();
+            }
+            date = convertData.convertDate(data.getData());
+        }
+
+        System.out.println("DATE OUT " + date);
+
+        if (-1 == cargoFlightID) {
+            cargoFlightID = passengerFlightID;
+        }
+
+        if (null != cargos) {
+            changeFlightCargo(cargoFlightID, cargos, false);
+        }
+
+        changePeopleTicket(tripID, passengerFlightID, date);
+
+    }
+
+    private void changePeopleTicket(int tripID, int newPassengerFlightID, String date) {
+        try {
+                String sql = "UPDATE TICKETS SET ID_FLIGHT = " + newPassengerFlightID + " WHERE ID_TRIP = " + tripID +" AND to_date('" + date  + "', 'dd.mm.yyyy') =\n" +
+                        "(SELECT FLY_DATE FROM FLIGHT WHERE FLIGHT.ID = TICKETS.ID_FLIGHT)";
+            System.out.println(sql);
+                Statement statement = null;
+                statement = connection.createStatement(
+                        ResultSet.TYPE_FORWARD_ONLY,
+                        ResultSet.CONCUR_UPDATABLE
+                );
+                ResultSet result = statement.executeQuery(sql);
+                result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private void changeFlightCargo(int newCargoFlightID, LinkedList<Integer> cargos, boolean isIn) {
+        String nameField;
+        if (isIn) {
+            nameField =  "ID_FLIGHT_IN";
+        } else {
+            nameField = "ID_FLIGHT_OUT";
+        }
+
+        try {
+            for (Integer cargo : cargos) {
+                String sql = "UPDATE CARGO SET " + nameField  +  " = "  + newCargoFlightID + "  WHERE ID = " +  cargo;
+                System.out.println(sql);
+                Statement statement = null;
+                statement = connection.createStatement(
+                        ResultSet.TYPE_FORWARD_ONLY,
+                        ResultSet.CONCUR_UPDATABLE
+                );
+                ResultSet result = statement.executeQuery(sql);
+                result.close();
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private LinkedList<Integer> getCargoID(int tripID, String date, boolean isIn) {
+        String nameField;
+        if (isIn) {
+            nameField =  "ID_FLIGHT_IN";
+        } else {
+            nameField = "ID_FLIGHT_OUT";
+        }
+        LinkedList<Integer> cargo = new LinkedList<>();
+        try {
+            String sql = "select CARGO.ID FROM TRIP INNER JOIN CARGO_TOURIST ON TRIP.ID = CARGO_TOURIST.ID_TRIP\n" +
+                    "     INNER JOIN CARGO ON CARGO_TOURIST.ID_CARGO = CARGO.ID\n" +
+                    "    INNER JOIN FLIGHT ON CARGO."+ nameField +" = FLIGHT.ID WHERE FLIGHT.FLY_DATE = to_date('" + date + "','dd.mm.yyyy')\n" +
+                    "    AND TRIP.ID =" + tripID ;
+            System.out.println(sql);
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                System.out.println("CARGO " + result.getString(1));
+                cargo.add(result.getInt(1));
+            }
+            return  cargo;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
+
+
 
     /* insert booking room and main trip
     * 1/4 part of big insert
@@ -578,7 +789,10 @@ public class DataBaseServer {
         all.add(flightDataIn);
         all.add(flightDataOut);
         if (1 != flightDataIn.size()) {
+            int s = 0;
                 for (FlightData flightData : flightDataIn) {
+                    int out_flight_id = flightDataOut.get(s).getID();
+                    s++;
                     if (flightData.getAirplaneData().isCargoPlane()) {
                         for (CargoData cargo : cargoList) {
                             try {
@@ -590,10 +804,11 @@ public class DataBaseServer {
                                         "    id_trip_val int;\n" +
                                         "    id_client_val int := " + client.getId() + ";\n" +
                                         "    id_warehouse_val int :=" + Integer.parseInt(cargo.getWarehouseID()) + ";\n" +
-                                        "    id_flight_val int := " + flightData.getID() + ";\n" +
+                                        "    id_flight_val_in int := " + flightData.getID() + ";\n" +
                                         "    count_val int :=" + cargo.getCount() + ";\n" +
                                         "    weight_val int :=" + cargo.getWeight() + ";\n" +
                                         "    wrap_val int :=" + cargo.getReal_wrap() + ";\n" +
+                                        "    id_flight_val_out int :=" + out_flight_id + ";\n" +
                                         "    cost_insurance_val int := " + cargo.getCost_insurance() + ";\n" +
                                         "    r_statement_id int;\n" +
                                         "    r_cargo_id int;\n" +
@@ -602,8 +817,8 @@ public class DataBaseServer {
                                         "     SELECT MAX(ID) into id_trip_val FROM TRIP;\n" +
                                         "     INSERT INTO STATEMENT (COUNT, COST_WRAP, COST_INSURANCE, WEIGHT) VALUES (count_val, wrap_val, cost_insurance_val, weight_val) returning ID\n" +
                                         "         into r_statement_id;\n" +
-                                        "     INSERT INTO CARGO (ID_WAREHOUSE, ID_STATEMENT, ID_FLIGHT, DATE_IN, DATE_OUT, KIND)\n" +
-                                        "        VALUES (id_warehouse_val, r_statement_id, id_flight_val, date_in_val, date_out_val, kind_val) returning ID into r_cargo_id;\n" +
+                                        "     INSERT INTO CARGO (ID_WAREHOUSE, ID_STATEMENT, ID_FLIGHT_IN, ID_FLIGHT_OUT, DATE_IN, DATE_OUT, KIND)\n" +
+                                        "        VALUES (id_warehouse_val, r_statement_id, id_flight_val_in, id_flight_val_out, date_in_val, date_out_val, kind_val) returning ID into r_cargo_id;\n" +
                                         "     INSERT INTO TRANSACTIONS(NAME, IS_INCOME, SUM, ID_CLIENT) VALUES (trans_name, '1', wrap_val, id_client_val) returning ID into r_transaction_id;\n" +
                                         "     INSERT INTO CARGO_TOURIST(ID_TRIP, ID_CARGO, ID_TRANSACTION) VALUES (id_trip_val, r_cargo_id, r_transaction_id);\n" +
                                         "end;";
@@ -618,6 +833,7 @@ public class DataBaseServer {
                 }
         } else {
                 FlightData data = flightDataIn.getFirst();
+            int out_flight_id = flightDataOut.get(0).getID();
                 for (CargoData cargo : cargoList) {
                     try {
                         String sql = "DECLARE\n" +
@@ -628,7 +844,8 @@ public class DataBaseServer {
                                 "    id_trip_val int;\n" +
                                 "    id_client_val int := " + client.getId() + ";\n" +
                                 "    id_warehouse_val int :=" + cargo.getWarehouseID() + ";\n" +
-                                "    id_flight_val int := " + data.getID() + ";\n" +
+                                "    id_flight_val_in int := " + data.getID() + ";\n" +
+                                "    id_flight_val_out int:=" + out_flight_id + ";\n" +
                                 "    count_val int :=" + cargo.getCount() + ";\n" +
                                 "    weight_val int :=" + cargo.getWeight() + ";\n" +
                                 "    wrap_val int :=" + cargo.getReal_wrap() + ";\n" +
@@ -640,8 +857,8 @@ public class DataBaseServer {
                                 "     SELECT MAX(ID) into id_trip_val FROM TRIP;\n" +
                                 "     INSERT INTO STATEMENT (COUNT, COST_WRAP, COST_INSURANCE, WEIGHT) VALUES (count_val, wrap_val, cost_insurance_val, weight_val) returning ID\n" +
                                 "         into r_statement_id;\n" +
-                                "     INSERT INTO CARGO (ID_WAREHOUSE, ID_STATEMENT, ID_FLIGHT, DATE_IN, DATE_OUT, KIND)\n" +
-                                "        VALUES (id_warehouse_val, r_statement_id, id_flight_val, date_in_val, date_out_val, kind_val) returning ID into r_cargo_id;\n" +
+                                "     INSERT INTO CARGO (ID_WAREHOUSE, ID_STATEMENT, ID_FLIGHT_IN, ID_FLIGHT_OUT, DATE_IN, DATE_OUT, KIND)\n" +
+                                "        VALUES (id_warehouse_val, r_statement_id, id_flight_val_in, id_flight_val_out, date_in_val, date_out_val, kind_val) returning ID into r_cargo_id;\n" +
                                 "     INSERT INTO TRANSACTIONS(NAME, IS_INCOME, SUM, ID_CLIENT) VALUES (trans_name, '1', wrap_val, id_client_val) returning ID into r_transaction_id;\n" +
                                 "     INSERT INTO CARGO_TOURIST(ID_TRIP, ID_CARGO, ID_TRANSACTION) VALUES (id_trip_val, r_cargo_id, r_transaction_id);\n" +
                                 "end;";
@@ -672,11 +889,12 @@ public class DataBaseServer {
                                 "    price_for_flight int :=" + 250 + ";\n" +
                                 "    id_client_val int :=" + client.getId() + ";\n" +
                                 "    r_transaction_id int;\n" +
-                                "begin\n" +
+                                "    id_trip_val int;\n" +
+                                 "begin\n" +
+                                "    SELECT MAX(ID) into id_trip_val FROM TRIP;\n" +
                                 "    INSERT INTO TRANSACTIONS(NAME, IS_INCOME, SUM, ID_CLIENT) VALUES (trans_name, '1', price_for_flight, id_client_val) returning ID into r_transaction_id;\n" +
-                                "    INSERT INTO TICKETS(ID_FLIGHT, ID_TRANS, ID_TOURIST) VALUES (id_flight_val, r_transaction_id, id_client_val);\n" +
+                                "    INSERT INTO TICKETS(ID_FLIGHT, ID_TRANS, ID_TOURIST, ID_TRIP) VALUES (id_flight_val, r_transaction_id, id_client_val, id_trip_val);\n" +
                                 "end;";
-//                        System.out.println(sql);
                         ResultSet resultSet = makeSql(sql);
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();

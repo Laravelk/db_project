@@ -31,7 +31,16 @@ public class FlightModel {
         ticketData = createVariantOfFlight(dateIn, dateOut, cargoWeight);
     }
 
+    FlightModel(DataBaseServer server, String dateIn,
+                String dateOut, int weight) {
+        this.dateIn = dateIn;
+        this.dateOut = dateOut;
+        this.server = server;
+        ticketData = createVariantOfFlight(dateIn, dateOut, weight);
+    }
+
     private LinkedList<TicketData> createVariantOfFlight(String dateIn, String dateOut, int weight) {
+        System.out.println(dateIn + "    " + dateOut);
         LinkedList<LinkedList<FlightData>> flightListIn = getVariantByData(dateIn, weight);
         LinkedList<LinkedList<FlightData>> flightListOut = getVariantByData(dateOut, weight);
 

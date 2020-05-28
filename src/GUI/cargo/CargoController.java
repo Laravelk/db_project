@@ -48,6 +48,13 @@ public class CargoController {
             model.getPrepareData().setDateIn(dateIn);
             model.getPrepareData().setDateOut(dateOut);
             model.insertPrepareData();
+            view.dispose();
+            try {
+                view = new CargoWindow(this, dateIn, dateOut);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            view.setVisible(true);
         });
 
         view.getNextButton().addActionListener(actionEvent -> {
