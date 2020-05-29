@@ -2,6 +2,7 @@ package GUI.mainwindow;
 
 import GUI.Controller.TripController;
 import GUI.requests.countofclientbydate.CountDialogController;
+import GUI.requests.excursionperiod.ExcursionPeriodController;
 import GUI.requests.hotellist.HotelRequestController;
 import GUI.requests.infoabouthotel.InfoAboutHotelController;
 import GUI.trip.TripWindowController;
@@ -92,6 +93,10 @@ public class MainController {
 
         view.getRequestFive().addActionListener(actionEvent -> {
             InfoAboutHotelController controller = new InfoAboutHotelController(server);
+        });
+
+        view.getRequestSix().addActionListener(actionEvent -> {
+            ExcursionPeriodController controller = new ExcursionPeriodController(server);
         });
 
         view.getSearchField().addActionListener(actionEvent -> {
