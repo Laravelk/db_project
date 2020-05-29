@@ -17,7 +17,7 @@ public class CountDialogView extends JFrame {
     private boolean isOnlyTravel = false;
 
     CountDialogView(CountDialogController controller) {
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         setLayout(new GridBagLayout());
 

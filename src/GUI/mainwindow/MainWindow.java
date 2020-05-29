@@ -21,6 +21,7 @@ public class MainWindow extends JFrame {
     private JButton editTrip = new JButton("Edit Trips");
     private JButton requestSecond = new JButton("Hotel request");
     private JButton requestThree = new JButton("Count request");
+    private JButton requestFive = new JButton("Booking request");
     private boolean adminMode = false;
     private boolean isTableUpdating = false;
 
@@ -76,7 +77,7 @@ public class MainWindow extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 4;
-        constraints.gridheight = 6;
+        constraints.gridheight = 7;
         add(scrollTable, constraints);
 
         constraints = new GridBagConstraints();
@@ -104,6 +105,11 @@ public class MainWindow extends JFrame {
         constraints.gridx = 5;
         constraints.gridy = 5;
         add(requestThree, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 5;
+        constraints.gridy = 6;
+        add(requestFive, constraints);
 
         //JDialog loginPage = createLoginDialog();
         //loginPage.setVisible(true);
@@ -371,4 +377,8 @@ public class MainWindow extends JFrame {
     }
 
     public JButton getRequestThree() { return requestThree; }
+
+    public JButton getRequestFive() {
+        return requestFive;
+    }
 }

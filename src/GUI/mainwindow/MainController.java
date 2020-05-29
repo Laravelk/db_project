@@ -3,6 +3,7 @@ package GUI.mainwindow;
 import GUI.Controller.TripController;
 import GUI.requests.countofclientbydate.CountDialogController;
 import GUI.requests.hotellist.HotelRequestController;
+import GUI.requests.infoabouthotel.InfoAboutHotelController;
 import GUI.trip.TripWindowController;
 import GUI.addwindow.AddWindow;
 import Server.DataBaseServer;
@@ -87,6 +88,10 @@ public class MainController {
                 TripWindowController controller = new TripWindowController(server,
                         false, 0);
             }
+        });
+
+        view.getRequestFive().addActionListener(actionEvent -> {
+            InfoAboutHotelController controller = new InfoAboutHotelController(server);
         });
 
         view.getSearchField().addActionListener(actionEvent -> {

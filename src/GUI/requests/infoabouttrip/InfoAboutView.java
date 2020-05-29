@@ -10,7 +10,7 @@ public class InfoAboutView extends JFrame {
 
     InfoAboutView(InfoAboutController controller, AboutTripDate tripDate, String hotelNameString,
                   LinkedList<AboutExcursion> excursions, LinkedList<AboutCargo> cargos) {
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new GridBagLayout());
         setSize(1100,450);
 

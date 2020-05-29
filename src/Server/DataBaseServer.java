@@ -1134,6 +1134,54 @@ public class DataBaseServer {
         return cargos;
     }
 
+    /* 5 */
+    public LinkedList<Integer> getCountInHotelByTime(String dateIn, String dateOut) {
+        LinkedList<Integer> count = new LinkedList<>();
+        LinkedList<String> hotels = getHotels();
+        try {
+            for (String hotel : hotels) {
+                int counter = 0;
+                String sql = "SELECT COUNT(CLIENTS.ID) FROM CLIENTS INNER JOIN TRIP ON CLIENTS.ID = TRIP.ID_CLIENT\n" +
+                        "INNER JOIN BOOKING_ROOM ON TRIP.BOOKING_ROOM_ID = BOOKING_ROOM.ID INNER JOIN HOTELS\n" +
+                        "ON BOOKING_ROOM.ID_HOTEL = HOTELS.ID WHERE HOTELS.NAME = '" + hotel + "' AND DATE_IN between\n" +
+                        "to_date('" + dateIn + "', 'dd.mm.yyyy') and to_date('" + dateOut + "', 'dd.mm.yyyy') AND\n" +
+                        "DATE_OUT between to_date('" + dateIn +"', 'dd.mm.yyyy') and to_date('" + dateOut + "', 'dd.mm.yyyy')";
+                Statement statement = null;
+                statement = connection.createStatement(
+                        ResultSet.TYPE_FORWARD_ONLY,
+                        ResultSet.CONCUR_UPDATABLE
+                );
+                ResultSet result = statement.executeQuery(sql);
+                result.next();
+                counter = result.getInt(1);
+                result.close();
+
+                String sql2 = "SELECT COUNT(CLIENTS.ID) FROM CLIENTS INNER JOIN TRIP ON CLIENTS.ID = TRIP.ID_CLIENT\n" +
+                        "INNER JOIN BOOKING_ROOM ON TRIP.BOOKING_ROOM_ID = BOOKING_ROOM.ID INNER JOIN HOTELS\n" +
+                        "ON BOOKING_ROOM.ID_HOTEL = HOTELS.ID WHERE HOTELS.NAME = '" + hotel + "' AND CLIENTS.CHILDREN_ID IS NOT NULL\n" +
+                        "AND DATE_IN between to_date('" + dateIn + "', 'dd.mm.yyyy') and to_date('" + dateOut + "', 'dd.mm.yyyy') AND\n" +
+                        "DATE_OUT between to_date('" + dateIn +"', 'dd.mm.yyyy') and to_date('" + dateOut + "', 'dd.mm.yyyy')";
+
+                Statement statement2 = null;
+                statement = connection.createStatement(
+                        ResultSet.TYPE_FORWARD_ONLY,
+                        ResultSet.CONCUR_UPDATABLE
+                );
+                ResultSet result2 = statement.executeQuery(sql);
+                result2.next();
+                counter += result2.getInt(1);
+                result2.close();
+
+                count.add(counter);
+            }
+
+            return count;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return count;
+    }
+
     /*
     * @return ResultSet by sql
     * */

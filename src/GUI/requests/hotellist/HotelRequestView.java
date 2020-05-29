@@ -19,7 +19,7 @@ public class HotelRequestView extends JFrame {
 
     HotelRequestView(HotelRequestController controller) {
         this.controller = controller;
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         setSize(500, 400);
 
