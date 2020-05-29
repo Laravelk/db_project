@@ -1,6 +1,9 @@
 package Server;
 
 import Data.*;
+import GUI.requests.infoabouttrip.AboutCargo;
+import GUI.requests.infoabouttrip.AboutExcursion;
+import GUI.requests.infoabouttrip.AboutTripDate;
 
 import java.sql.*;
 import java.util.*;
@@ -1016,6 +1019,119 @@ public class DataBaseServer {
             throwables.printStackTrace();
         }
         return 0;
+    }
+
+    /* 4 request */
+    public LinkedList<AboutTripDate> getAllDates(int touristID) {
+        LinkedList<AboutTripDate> dates = new LinkedList<>();
+        try {
+            String sql = "SELECT CARGO.DATE_IN, CARGO.DATE_OUT FROM CLIENTS INNER JOIN TRIP ON CLIENTS.ID = TRIP.ID_CLIENT\n" +
+                    "INNER JOIN CARGO_TOURIST on TRIP.ID = CARGO_TOURIST.ID_TRIP INNER JOIN CARGO\n" +
+                    "    on CARGO_TOURIST.ID_CARGO = CARGO.ID WHERE CLIENTS.ID = " + touristID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                AboutTripDate tripDate = new AboutTripDate(convertData.convertDate(result.getString(1)),
+                        convertData.convertDate(result.getString(2)));
+                dates.add(tripDate);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
+    public AboutTripDate getDate(int tripId) {
+        try {
+            String sql = "SELECT TRIP.DATE_IN, TRIP.DATE_OUT FROM TRIP WHERE TRIP.ID = " + tripId;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            System.out.println(sql);
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            String dateIn = result.getString(1);
+            String dateOut = result.getString(2);
+            result.close();
+            return new AboutTripDate(convertData.convertDate(dateIn),
+                    convertData.convertDate(dateOut));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getHostelInTrip(int tripID) {
+        try {
+            String sql = "SELECT HOTELS.NAME FROM TRIP INNER JOIN BOOKING_ROOM ON TRIP.BOOKING_ROOM_ID = BOOKING_ROOM.ID\n" +
+                    "    INNER JOIN HOTELS ON BOOKING_ROOM.ID_HOTEL = HOTELS.ID WHERE TRIP.ID = " + tripID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            String name = result.getString(1);
+            result.close();
+            return name;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
+    public LinkedList<AboutExcursion> getDataExcursionForRequest(int tripID) {
+        LinkedList<AboutExcursion> dataExcursions = new LinkedList<>();
+        try {
+            String sql = "SELECT TITLE, AGENCY.NAME FROM TRIP INNER JOIN REST_TOURIST ON TRIP.ID = REST_TOURIST.ID_TRIP\n" +
+                    "INNER JOIN EXCURSION ON REST_TOURIST.ID_EXCURSION = EXCURSION.ID\n" +
+                    "INNER JOIN AGENCY ON EXCURSION.ID_AGENCY = AGENCY.ID WHERE TRIP.ID = " + tripID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+
+            while (result.next()) {
+                AboutExcursion dataExcursion = new AboutExcursion(result.getString(1), result.getString(2));
+                dataExcursions.add(dataExcursion);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return dataExcursions;
+    }
+
+    public LinkedList<AboutCargo> getAboutCargo(int tripID) {
+        LinkedList<AboutCargo> cargos = new LinkedList<>();
+        try {
+            String sql = "SELECT CARGO.KIND, STATEMENT.WEIGHT, STATEMENT.COUNT FROM TRIP INNER JOIN CARGO_TOURIST  \n" +
+                    "ON TRIP.ID = CARGO_TOURIST.ID_TRIP\n" +
+                    "INNER JOIN CARGO ON CARGO_TOURIST.ID_CARGO = CARGO.ID \n" +
+                    "INNER JOIN STATEMENT ON CARGO.ID_STATEMENT = STATEMENT.ID WHERE TRIP.ID = " + tripID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()) {
+                AboutCargo aboutCargo = new AboutCargo
+                        (result.getString(1), result.getInt(2), result.getInt(3));
+                cargos.add(aboutCargo);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return cargos;
     }
 
     /*

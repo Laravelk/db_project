@@ -17,7 +17,7 @@ public class MainTripWindow extends JFrame {
     private JButton editCargo = new JButton("Edit Cargo");
     private JButton editExcursion = new JButton("Edit Excursion");
     private JButton editBooking = new JButton("Edit Booking");
-    private JButton getInfoAboutTrip = new JButton("Get Info About Trip");
+    private JButton getInfoAboutTrip = new JButton("Get Info");
 
     private boolean isTableSelection = false;
     private int selectionID = -1;
@@ -67,6 +67,10 @@ public class MainTripWindow extends JFrame {
         constraints.gridy = 4;
         add(editBooking, constraints);
 
+        constraints.gridx = 7;
+        constraints.gridy = 5;
+        constraints.anchor = GridBagConstraints.NORTH;
+        add(getInfoAboutTrip, constraints);
     }
 
 
@@ -134,5 +138,9 @@ public class MainTripWindow extends JFrame {
 
     public boolean isTableSelection() {
         return isTableSelection;
+    }
+
+    public JButton getGetInfoAboutTrip() {
+        return getInfoAboutTrip;
     }
 }

@@ -3,7 +3,11 @@ package GUI.trip;
 import Data.TicketData;
 import Data.TripData;
 import GUI.flight.FlightController;
+import GUI.requests.infoabouttrip.InfoAboutController;
 import Server.DataBaseServer;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class TripWindowController {
     private DataBaseServer server;
@@ -35,6 +39,13 @@ public class TripWindowController {
                     int cargoWeight = server.getWeightCargoByTripId(tripData.getID());
                     FlightController controller = new FlightController(server,
                             this, convertDate(tripData.getDateIn()), convertDate(tripData.getDateOut()), cargoWeight);
+                }
+            });
+
+            mainTripWindow.getGetInfoAboutTrip().addActionListener(actionEvent -> {
+                if (mainTripWindow.isTableSelection()) {
+                    int selectionID = mainTripWindow.getSelectionID();
+                    InfoAboutController controller = new InfoAboutController(server, selectionID);
                 }
             });
             mainTripWindow.setVisible(true);
