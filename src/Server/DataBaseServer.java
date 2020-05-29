@@ -968,7 +968,6 @@ public class DataBaseServer {
             } else if (isOnlyTravel) {
                 sql += " AND CLIENTS.TRAVEL_TARGET = 'TRAVEL'";
             }
-            System.out.println(sql);
             Statement statement = null;
             statement = connection.createStatement(
                     ResultSet.TYPE_FORWARD_ONLY,
@@ -989,6 +988,34 @@ public class DataBaseServer {
             throwables.printStackTrace();
         }
         return null;
+    }
+
+    /* 3 request */
+    public int getCountOfPeople(String dateIn, String dateOut, boolean isOnlyWork, boolean isOnlyTravel) {
+        String sql = "";
+        try {
+            sql += "SELECT COUNT(DISTINCT CLIENTS.ID) FROM CLIENTS INNER JOIN TRIP ON CLIENTS.ID = TRIP.ID_CLIENT WHERE DATE_IN between\n" +
+                    "    to_date('" + dateIn + "', 'dd.mm.yyyy')\n" +
+                    "    and to_date('" + dateOut + "', 'dd.mm.yyyy') AND\n" +
+                    " DATE_OUT between to_date('" + dateIn +"', 'dd.mm.yyyy')\n" +
+                    "     and to_date('" + dateOut + "', 'dd.mm.yyyy')";
+            if (isOnlyWork) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'WORK'";
+            } else if (isOnlyTravel) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'TRAVEL'";
+            }
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            return result.getInt(1);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return 0;
     }
 
     /*

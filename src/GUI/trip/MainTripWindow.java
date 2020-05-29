@@ -17,6 +17,7 @@ public class MainTripWindow extends JFrame {
     private JButton editCargo = new JButton("Edit Cargo");
     private JButton editExcursion = new JButton("Edit Excursion");
     private JButton editBooking = new JButton("Edit Booking");
+    private JButton getInfoAboutTrip = new JButton("Get Info About Trip");
 
     private boolean isTableSelection = false;
     private int selectionID = -1;

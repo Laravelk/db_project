@@ -1,6 +1,7 @@
 package GUI.mainwindow;
 
 import GUI.Controller.TripController;
+import GUI.requests.countofclientbydate.CountDialogController;
 import GUI.requests.hotellist.HotelRequestController;
 import GUI.trip.TripWindowController;
 import GUI.addwindow.AddWindow;
@@ -72,6 +73,10 @@ public class MainController {
 
         view.getRequestSecond().addActionListener(actionEvent -> {
             HotelRequestController hotelRequestController = new HotelRequestController(server);
+        });
+
+        view.getRequestThree().addActionListener(actionEvent -> {
+            CountDialogController controller = new CountDialogController(server);
         });
 
         view.getEditTrip().addActionListener(actionEvent -> {
