@@ -931,6 +931,67 @@ public class DataBaseServer {
     }
 
     /*
+    * REQUEST ZONE
+    * REQUEST ZONE
+    * REQUEST ZONE
+    * REQUEST ZONE
+    * REQUEST ZONE
+    * REQUEST ZONE
+    * REQUEST ZONE
+    * REQUEST ZONE
+    * */
+
+    /* request one in main window */
+
+    /* second request */
+    public Vector<Vector<String>> secondRequest(Vector<String> hotelsNames, boolean isOnlyWork, boolean isOnlyTravel) {
+        Vector<Vector<String>> data = new Vector<Vector<String>>();
+        try {
+            String sql = "SELECT CLIENTS.NAME, CLIENTS.LAST_NAME, \n" +
+                    "       CLIENTS.DOCUMENT_NUMBER, HOTELS.NAME, CLIENTS.TRAVEL_TARGET FROM  BOOKING_ROOM\n" +
+                    "        INNER JOIN HOTELS ON BOOKING_ROOM.ID_HOTEL = HOTELS.ID\n" +
+                    "        INNER JOIN TRIP ON BOOKING_ROOM.ID = TRIP.BOOKING_ROOM_ID\n" +
+                    "        INNER JOIN CLIENTS ON TRIP.ID_CLIENT = CLIENTS.ID";
+            if (0 != hotelsNames.size()) {
+                sql += " WHERE (";
+                for (int i = 0; i < hotelsNames.size(); i++) {
+                    sql +=  " HOTELS.NAME = '" + hotelsNames.elementAt(i) + "'";
+                    if (i + 1 < hotelsNames.size()) {
+                        sql += " OR ";
+                    }
+                }
+                sql += ")";
+            }
+
+            if (isOnlyWork) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'WORK'";
+            } else if (isOnlyTravel) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'TRAVEL'";
+            }
+            System.out.println(sql);
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                Vector<String> row = new Vector<>();
+                row.add(result.getString(1));
+                row.add(result.getString(2));
+                row.add(result.getString(3));
+                row.add(result.getString(4));
+                row.add(result.getString(5));
+                data.add(row);
+            }
+            return data;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
+    /*
     * @return ResultSet by sql
     * */
     private ResultSet makeSql(String sql) throws SQLException {

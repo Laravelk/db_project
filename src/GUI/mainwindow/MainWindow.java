@@ -1,11 +1,10 @@
 package GUI.mainwindow;
 
 import Data.ClientData;
+import GUI.instruments.CategoryFilter;
 import Server.DataBaseServer;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -20,6 +19,7 @@ public class MainWindow extends JFrame {
     private final JButton addPeople = new JButton("add people");
     private final JButton addDeclaration = new JButton("add declaration");
     private JButton editTrip = new JButton("Edit Trips");
+    private JButton requestSecond = new JButton("Hotel request");
     private boolean adminMode = false;
     private boolean isTableUpdating = false;
 
@@ -75,7 +75,7 @@ public class MainWindow extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 4;
-        constraints.gridheight = 4;
+        constraints.gridheight = 5;
         add(scrollTable, constraints);
 
         constraints = new GridBagConstraints();
@@ -93,6 +93,11 @@ public class MainWindow extends JFrame {
         constraints.gridx = 5;
         constraints.gridy = 3;
         add(editTrip, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 5;
+        constraints.gridy = 4;
+        add(requestSecond, constraints);
 
         //JDialog loginPage = createLoginDialog();
         //loginPage.setVisible(true);
@@ -353,5 +358,9 @@ public class MainWindow extends JFrame {
 
     public CategoryFilter getCategoryFilter() {
         return categoryFilter;
+    }
+
+    public JButton getRequestSecond() {
+        return requestSecond;
     }
 }

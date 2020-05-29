@@ -1,4 +1,4 @@
-package GUI.mainwindow;
+package GUI.instruments;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,7 +7,7 @@ public class CategoryFilter extends JComponent {
     private JCheckBox travelCheck = new JCheckBox();
     private JCheckBox workCheck = new JCheckBox();
 
-    CategoryFilter() {
+    public CategoryFilter() {
         this.setBorder(BorderFactory.createEtchedBorder());
 
         JLabel travelLabel = new JLabel("Travel: ");
@@ -21,11 +21,11 @@ public class CategoryFilter extends JComponent {
         add(workCheck);
     }
 
-    JCheckBox getTravelCheck() {
+    public JCheckBox getTravelCheck() {
         return travelCheck;
     }
 
-    JCheckBox getWorkCheck() {
+    public JCheckBox getWorkCheck() {
         return workCheck;
     }
 }

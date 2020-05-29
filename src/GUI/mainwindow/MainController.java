@@ -1,6 +1,7 @@
 package GUI.mainwindow;
 
 import GUI.Controller.TripController;
+import GUI.requests.hotellist.HotelRequestController;
 import GUI.trip.TripWindowController;
 import GUI.addwindow.AddWindow;
 import Server.DataBaseServer;
@@ -67,7 +68,10 @@ public class MainController {
             };
             addWindow.addWindowListener(listener);
             addWindow.setVisible(true);
+        });
 
+        view.getRequestSecond().addActionListener(actionEvent -> {
+            HotelRequestController hotelRequestController = new HotelRequestController(server);
         });
 
         view.getEditTrip().addActionListener(actionEvent -> {
