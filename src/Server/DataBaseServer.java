@@ -1,6 +1,7 @@
 package Server;
 
 import Data.*;
+import GUI.requests.dataaboutflight.AboutFlightData;
 import GUI.requests.infoabouttrip.AboutCargo;
 import GUI.requests.infoabouttrip.AboutExcursion;
 import GUI.requests.infoabouttrip.AboutTripDate;
@@ -582,7 +583,7 @@ public class DataBaseServer {
     private FlightData getFlightDataFromResultal(ResultSet result) throws  SQLException {
         FlightData data = new FlightData();
         data.setID(result.getInt(1));
-        data.setData(result.getString(2));
+        data.setData(convertData.convertDate(result.getString(2)));
         data.setAirplaneData(getAirplaneDataByID(result.getInt(3)));
         return data;
     }
@@ -816,6 +817,7 @@ public class DataBaseServer {
                                         "    id_flight_val_in int := " + flightData.getID() + ";\n" +
                                         "    count_val int :=" + cargo.getCount() + ";\n" +
                                         "    weight_val int :=" + cargo.getWeight() + ";\n" +
+                                         "   volume_val int := " + cargo.getVolume() + ";\n" +
                                         "    wrap_val int :=" + cargo.getReal_wrap() + ";\n" +
                                         "    id_flight_val_out int :=" + out_flight_id + ";\n" +
                                         "    cost_insurance_val int := " + cargo.getCost_insurance() + ";\n" +
@@ -824,7 +826,7 @@ public class DataBaseServer {
                                         "    r_transaction_id int;\n" +
                                         "begin\n" +
                                         "     SELECT MAX(ID) into id_trip_val FROM TRIP;\n" +
-                                        "     INSERT INTO STATEMENT (COUNT, COST_WRAP, COST_INSURANCE, WEIGHT) VALUES (count_val, wrap_val, cost_insurance_val, weight_val) returning ID\n" +
+                                        "     INSERT INTO STATEMENT (COUNT, COST_WRAP, COST_INSURANCE, WEIGHT, VOLUME) VALUES (count_val, wrap_val, cost_insurance_val, weight_val, volume_val) returning ID\n" +
                                         "         into r_statement_id;\n" +
                                         "     INSERT INTO CARGO (ID_WAREHOUSE, ID_STATEMENT, ID_FLIGHT_IN, ID_FLIGHT_OUT, DATE_IN, DATE_OUT, KIND)\n" +
                                         "        VALUES (id_warehouse_val, r_statement_id, id_flight_val_in, id_flight_val_out, date_in_val, date_out_val, kind_val) returning ID into r_cargo_id;\n" +
@@ -858,6 +860,7 @@ public class DataBaseServer {
                                 "    id_flight_val_out int:=" + out_flight_id + ";\n" +
                                 "    count_val int :=" + cargo.getCount() + ";\n" +
                                 "    weight_val int :=" + cargo.getWeight() + ";\n" +
+                                "    volume_val int :=" + cargo.getVolume() + ";\n" +
                                 "    wrap_val int :=" + cargo.getReal_wrap() + ";\n" +
                                 "    cost_insurance_val int := " + cargo.getCost_insurance() + ";\n" +
                                 "    r_statement_id int;\n" +
@@ -865,7 +868,7 @@ public class DataBaseServer {
                                 "    r_transaction_id int;\n" +
                                 "begin\n" +
                                 "     SELECT MAX(ID) into id_trip_val FROM TRIP;\n" +
-                                "     INSERT INTO STATEMENT (COUNT, COST_WRAP, COST_INSURANCE, WEIGHT) VALUES (count_val, wrap_val, cost_insurance_val, weight_val) returning ID\n" +
+                                "     INSERT INTO STATEMENT (COUNT, COST_WRAP, COST_INSURANCE, WEIGHT, VOLUME) VALUES (count_val, wrap_val, cost_insurance_val, weight_val, volume_val) returning ID\n" +
                                 "         into r_statement_id;\n" +
                                 "     INSERT INTO CARGO (ID_WAREHOUSE, ID_STATEMENT, ID_FLIGHT_IN, ID_FLIGHT_OUT, DATE_IN, DATE_OUT, KIND)\n" +
                                 "        VALUES (id_warehouse_val, r_statement_id, id_flight_val_in, id_flight_val_out, date_in_val, date_out_val, kind_val) returning ID into r_cargo_id;\n" +
@@ -1239,6 +1242,40 @@ public class DataBaseServer {
             throwables.printStackTrace();
         }
         return mostPopularExcursion;
+    }
+
+    /* 8 */
+
+    public AboutFlightData getDataAboutFlight(int flightID, boolean isCargoPlane) {
+        AboutFlightData data = null;
+        try {
+            String sql = "SELECT SUM(COUNT), SUM(WEIGHT), SUM(VOLUME) FROM CARGO INNER JOIN FLIGHT ON CARGO.ID_FLIGHT_IN = FLIGHT.ID\n" +
+                    "    INNER JOIN STATEMENT ON CARGO.ID_STATEMENT = STATEMENT.ID WHERE FLIGHT.ID = " + flightID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            data = new AboutFlightData(result.getInt(2), result.getInt(3), 0);
+            result.close();
+            if (!isCargoPlane) {
+                String sql2 = "SELECT COUNT(TICKETS.ID_FLIGHT) FROM TICKETS WHERE ID_FLIGHT = " + flightID;
+                Statement statement2 = null;
+                statement2 = connection.createStatement(
+                        ResultSet.TYPE_FORWARD_ONLY,
+                        ResultSet.CONCUR_UPDATABLE
+                );
+                ResultSet result2 = statement2.executeQuery(sql2);
+                result.next();
+                data.setCountForPassenger(result2.getInt(1));
+            }
+            return data;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return data;
     }
 
     /*

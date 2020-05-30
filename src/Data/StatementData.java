@@ -7,6 +7,7 @@ public class StatementData {
     private int real_wrap;
     private int cost_insurance;
     private int weight;
+    private int volume;
 
     public int getCount() {
         return count;
@@ -38,5 +39,13 @@ public class StatementData {
 
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+
+    public int getVolume() {
+        return volume;
+    }
+
+    public void setVolume(int volume) {
+        this.volume = volume;
     }
 }

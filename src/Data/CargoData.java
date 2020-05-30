@@ -86,4 +86,12 @@ public class CargoData {
     public void setWarehouseID(String warehouseID) {
         this.warehouseID = warehouseID;
     }
+
+    public void setVolume(int volume) {
+        statementData.setVolume(volume);
+    }
+
+    public int getVolume() {
+        return statementData.getVolume();
+    }
 }

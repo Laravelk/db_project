@@ -19,11 +19,12 @@ public class MainWindow extends JFrame {
     private final JButton addPeople = new JButton("add people");
     private final JButton addDeclaration = new JButton("add declaration");
     private JButton editTrip = new JButton("Edit Trips");
-    private JButton requestSecond = new JButton("Hotel request");
+    private JButton requestSecond = new JButton("Hotel request"); // все запросы минус 1
     private JButton requestThree = new JButton("Count request");
     private JButton requestFive = new JButton("Booking request");
     private JButton requestSix = new JButton("Excursion tourist request");
     private JButton requestSeven = new JButton("Most popular excursion");
+    private JButton requestEight = new JButton("Info About Flight");
     private boolean adminMode = false;
     private boolean isTableUpdating = false;
 
@@ -79,7 +80,7 @@ public class MainWindow extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 4;
-        constraints.gridheight = 9;
+        constraints.gridheight = 10;
         add(scrollTable, constraints);
 
         constraints = new GridBagConstraints();
@@ -122,6 +123,11 @@ public class MainWindow extends JFrame {
         constraints.gridx = 5;
         constraints.gridy = 8;
         add(requestSeven, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 5;
+        constraints.gridy = 9;
+        add(requestEight, constraints);
 
 
         //JDialog loginPage = createLoginDialog();
@@ -401,5 +407,9 @@ public class MainWindow extends JFrame {
 
     public JButton getRequestSeven() {
         return requestSeven;
+    }
+
+    public JButton getRequestEight() {
+        return requestEight;
     }
 }

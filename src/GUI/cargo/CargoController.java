@@ -39,9 +39,15 @@ public class CargoController {
             double insurance = Double.parseDouble(view.getCostField().getText()) * 0.1;
             view.getCostField().setText("Стоимость страховки " + String.valueOf
                     (insurance * model.getPrepareData().getCount()) + "$");
+            view.getVolumeTextField().setEnabled(true);
+        });
+
+        view.getVolumeTextField().addActionListener(actionEvent -> {
+            model.getPrepareData().setVolume(Integer.parseInt(view.getVolumeTextField().getText()));
             view.getAddCargoButton().setEnabled(true);
             view.getNextButton().setEnabled(true);
         });
+
 
         view.getAddCargoButton().addActionListener(actionEvent -> {
             view.getContentPane().removeAll();

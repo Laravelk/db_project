@@ -19,6 +19,7 @@ public class CargoWindow extends JFrame {
     private JTextField kindField;
     private JTextField costField;
     private JTextField countTextField;
+    private JTextField volumeTextField;
     private JButton addCargoButton;
     private JTextField weightTextField;
     private JButton nextWindow;
@@ -26,7 +27,7 @@ public class CargoWindow extends JFrame {
     private JComboBox<String> warehouses;
 
     CargoWindow(CargoController controller, String dateInString, String dateOutString) throws ParseException {
-        setMinimumSize(new Dimension(300, 400));
+        setMinimumSize(new Dimension(300, 480));
 
         CargoData data = new CargoData();
         prevButton.setEnabled(true);
@@ -165,33 +166,49 @@ public class CargoWindow extends JFrame {
         constraints.gridy = 13;
         add(weightTextField, constraints);
 
+        JLabel volumeLabel = new JLabel("Volume: ");
+        constraints.gridx = 0;
+        constraints.gridwidth = 2;
+        constraints.gridy = 14;
+        add(volumeLabel, constraints);
+
+        constraints = new GridBagConstraints();
+        volumeTextField = new JTextField(20);
+        volumeTextField.setEnabled(false);
+        PlainDocument doc4 = (PlainDocument) volumeTextField.getDocument();
+        doc.setDocumentFilter(new DigitFilter());
+        constraints.gridx = 0;
+        constraints.gridwidth = 2;
+        constraints.gridy = 15;
+        add(volumeTextField, constraints);
+
         constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.WEST;
         JLabel costInsurance = new JLabel("Cost insurance is: ");
         constraints.gridx = 0;
         constraints.gridwidth = 2;
-        constraints.gridy = 14;
+        constraints.gridy = 16;
         add(costInsurance, constraints);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 15;
+        constraints.gridy = 17;
         add(prevButton, constraints);
 
         addCargoButton = new JButton("Add another Cargo");
         addCargoButton.setEnabled(false);
         constraints.gridx = 1;
-        constraints.gridy = 15;
+        constraints.gridy = 17;
         add(addCargoButton, constraints);
 
         nextButton.setEnabled(false);
         constraints.gridx = 0;
-        constraints.gridy = 16;
+        constraints.gridy = 18;
         add(nextButton, constraints);
 
         skipButton = new JButton("Skip Cargo");
         constraints.gridx = 1;
-        constraints.gridy = 16;
+        constraints.gridy = 18;
         add(skipButton, constraints);
     }
 
@@ -229,6 +246,10 @@ public class CargoWindow extends JFrame {
 
     JButton getPrevButton() {
         return prevButton;
+    }
+
+    public JTextField getVolumeTextField() {
+        return volumeTextField;
     }
 }
 
