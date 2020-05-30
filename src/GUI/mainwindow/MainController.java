@@ -5,6 +5,7 @@ import GUI.requests.countofclientbydate.CountDialogController;
 import GUI.requests.excursionperiod.ExcursionPeriodController;
 import GUI.requests.hotellist.HotelRequestController;
 import GUI.requests.infoabouthotel.InfoAboutHotelController;
+import GUI.requests.popularexcursion.PopularExcursionController;
 import GUI.trip.TripWindowController;
 import GUI.addwindow.AddWindow;
 import Server.DataBaseServer;
@@ -97,6 +98,10 @@ public class MainController {
 
         view.getRequestSix().addActionListener(actionEvent -> {
             ExcursionPeriodController controller = new ExcursionPeriodController(server);
+        });
+
+        view.getRequestSeven().addActionListener(actionEvent -> {
+            PopularExcursionController controller = new PopularExcursionController(server);
         });
 
         view.getSearchField().addActionListener(actionEvent -> {

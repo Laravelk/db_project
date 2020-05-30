@@ -4,6 +4,7 @@ import Data.*;
 import GUI.requests.infoabouttrip.AboutCargo;
 import GUI.requests.infoabouttrip.AboutExcursion;
 import GUI.requests.infoabouttrip.AboutTripDate;
+import GUI.requests.popularexcursion.PopularExcursionData;
 
 import java.sql.*;
 import java.util.*;
@@ -510,6 +511,7 @@ public class DataBaseServer {
             ResultSet result = statement.executeQuery(sql);
             result.next();
             AirplaneData data = new AirplaneData(result.getInt(1), result.getInt(2), result.getInt(3), result.getInt(4), result.getString(5));
+            result.close();
             return data;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -527,7 +529,9 @@ public class DataBaseServer {
                     ResultSet.CONCUR_UPDATABLE
             );
             ResultSet result = statement.executeQuery(sql);
-            return convertData.parse_trip_data(result);
+            Vector<Vector<String>> data = convertData.parse_trip_data(result);
+            result.close();
+            return data;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -545,7 +549,9 @@ public class DataBaseServer {
                     ResultSet.CONCUR_UPDATABLE
             );
             ResultSet result = statement.executeQuery(sql);
-            return convertData.parse_trip_data(result);
+            Vector<Vector<String>> data = convertData.parse_trip_data(result);
+            result.close();
+            return data;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -837,6 +843,7 @@ public class DataBaseServer {
         } else {
                 FlightData data = flightDataIn.getFirst();
             int out_flight_id = flightDataOut.get(0).getID();
+            if (null != cargoList) {
                 for (CargoData cargo : cargoList) {
                     try {
                         String sql = "DECLARE\n" +
@@ -872,6 +879,7 @@ public class DataBaseServer {
                         throwables.printStackTrace();
                     }
                 }
+            }
         }
     }
 
@@ -1184,6 +1192,53 @@ public class DataBaseServer {
             throwables.printStackTrace();
         }
         return 0;
+    }
+
+    /* 7 */
+
+    public LinkedList<String> getGoodAgencyNames() {
+        LinkedList<String> linkedList = new LinkedList<>();
+        try {
+            String sql = "SELECT AGENCY.NAME FROM EXCURSION INNER JOIN AGENCY ON EXCURSION.ID_AGENCY = AGENCY.ID\n" +
+                    "WHERE EXCURSION.ID in (SELECT ID FROM EXCURSION WHERE EXCURSION.RATE = (SELECT MAX(RATE) FROM EXCURSION)) GROUP BY AGENCY.NAME\n" +
+                    "ORDER BY COUNT(AGENCY.NAME) DESC";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                linkedList.add(result.getString(1));
+            }
+            result.close();
+            return linkedList;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return linkedList;
+    }
+
+    public String getMostPopularExcursion() {
+        String mostPopularExcursion = "";
+        try {
+            String sql = "SELECT EXCURSION.TITLE FROM REST_TOURIST INNER JOIN EXCURSION ON ID_EXCURSION = EXCURSION.ID\n" +
+                    "WHERE REST_TOURIST.ID = (SELECT MIN(ID) FROM REST_TOURIST) GROUP BY TITLE\n" +
+                    "ORDER BY COUNT(EXCURSION.TITLE) DESC";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            mostPopularExcursion = result.getString(1);
+            result.close();
+            return mostPopularExcursion;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return mostPopularExcursion;
     }
 
     /*

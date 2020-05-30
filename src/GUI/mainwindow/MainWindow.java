@@ -23,6 +23,7 @@ public class MainWindow extends JFrame {
     private JButton requestThree = new JButton("Count request");
     private JButton requestFive = new JButton("Booking request");
     private JButton requestSix = new JButton("Excursion tourist request");
+    private JButton requestSeven = new JButton("Most popular excursion");
     private boolean adminMode = false;
     private boolean isTableUpdating = false;
 
@@ -78,7 +79,7 @@ public class MainWindow extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 4;
-        constraints.gridheight = 8;
+        constraints.gridheight = 9;
         add(scrollTable, constraints);
 
         constraints = new GridBagConstraints();
@@ -116,6 +117,12 @@ public class MainWindow extends JFrame {
         constraints.gridx = 5;
         constraints.gridy = 7;
         add(requestSix, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 5;
+        constraints.gridy = 8;
+        add(requestSeven, constraints);
+
 
         //JDialog loginPage = createLoginDialog();
         //loginPage.setVisible(true);
@@ -390,5 +397,9 @@ public class MainWindow extends JFrame {
 
     public JButton getRequestSix() {
         return requestSix;
+    }
+
+    public JButton getRequestSeven() {
+        return requestSeven;
     }
 }
