@@ -5,6 +5,8 @@ import GUI.requests.dataaboutflight.AboutFlightData;
 import GUI.requests.infoabouttrip.AboutCargo;
 import GUI.requests.infoabouttrip.AboutExcursion;
 import GUI.requests.infoabouttrip.AboutTripDate;
+import GUI.requests.infoaboutwarehouse.DataAboutFlightsWithWarehouse;
+import GUI.requests.infoaboutwarehouse.DataAboutWarehouse;
 import GUI.requests.popularexcursion.PopularExcursionData;
 
 import java.sql.*;
@@ -1276,6 +1278,61 @@ public class DataBaseServer {
             throwables.printStackTrace();
         }
         return data;
+    }
+
+    /* 9 */
+
+    public DataAboutWarehouse getWarehouseData(int warehouseID, String dateIn, String dateOut) {
+        DataAboutWarehouse dataAboutWarehouse = null;
+        try {
+            String sql = "SELECT SUM(COUNT), SUM(WEIGHT) FROM CARGO INNER JOIN STATEMENT ON CARGO.ID_STATEMENT = STATEMENT.ID\n" +
+                    "WHERE CARGO.ID_WAREHOUSE = " + warehouseID + " AND DATE_IN between to_date('" + dateIn + "', 'dd.mm.yyyy') and to_date('" + dateOut +"', 'dd.mm.yyyy')";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            dataAboutWarehouse = new DataAboutWarehouse(result.getInt(2), result.getInt(1));
+            result.close();
+            return dataAboutWarehouse;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return dataAboutWarehouse;
+    }
+
+    public DataAboutFlightsWithWarehouse getWarehouseDataAroundFlight(int warehouseID, String dateIn, String dateOut) {
+        DataAboutFlightsWithWarehouse dataAboutFlightsWithWarehouse = null;
+        try {
+            int passenger = 0;
+            int cargo = 0;
+            String sqlPassenger = "SELECT COUNT(CARGO.ID) FROM CARGO INNER JOIN FLIGHT ON CARGO.ID_FLIGHT_IN = FLIGHT.ID\n" +
+                    "INNER JOIN AIRPLANE ON FLIGHT.AIRPLANE_ID = AIRPLANE.ID WHERE CARGO.ID_WAREHOUSE = " + warehouseID + " AND DATE_IN\n" +
+                    "between to_date('" + dateIn + "', 'dd.mm.yyyy') and to_date('" + dateOut +"', 'dd.mm.yyyy') AND IS_CARGOPLANE = '0'";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sqlPassenger);
+            result.next();
+            passenger = result.getInt(1);
+            result.close();
+            String sqlCargo = "SELECT COUNT(CARGO.ID) FROM CARGO INNER JOIN FLIGHT ON CARGO.ID_FLIGHT_IN = FLIGHT.ID\n" +
+                    "INNER JOIN AIRPLANE ON FLIGHT.AIRPLANE_ID = AIRPLANE.ID WHERE CARGO.ID_WAREHOUSE = " + warehouseID + " AND DATE_IN\n" +
+                    "between to_date('" + dateIn + "', 'dd.mm.yyyy') and to_date('" + dateOut +"', 'dd.mm.yyyy') AND IS_CARGOPLANE = '1'";
+            ResultSet result2 = statement.executeQuery(sqlCargo);
+            result2.next();
+            cargo = result2.getInt(1);
+            result2.close();
+            dataAboutFlightsWithWarehouse = new DataAboutFlightsWithWarehouse(cargo, passenger);
+            return dataAboutFlightsWithWarehouse;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return dataAboutFlightsWithWarehouse;
     }
 
     /*

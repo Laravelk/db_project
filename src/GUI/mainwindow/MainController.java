@@ -6,6 +6,7 @@ import GUI.requests.dataaboutflight.AboutFlightController;
 import GUI.requests.excursionperiod.ExcursionPeriodController;
 import GUI.requests.hotellist.HotelRequestController;
 import GUI.requests.infoabouthotel.InfoAboutHotelController;
+import GUI.requests.infoaboutwarehouse.InfoAboutWarehouseController;
 import GUI.requests.popularexcursion.PopularExcursionController;
 import GUI.trip.TripWindowController;
 import GUI.addwindow.AddWindow;
@@ -107,6 +108,10 @@ public class MainController {
 
         view.getRequestEight().addActionListener(actionEvent -> {
             AboutFlightController controller = new AboutFlightController(server);
+        });
+
+        view.getRequestNine().addActionListener(actionEvent -> {
+            InfoAboutWarehouseController controller = new InfoAboutWarehouseController(server);
         });
 
         view.getSearchField().addActionListener(actionEvent -> {
