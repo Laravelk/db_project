@@ -11,7 +11,6 @@ import GUI.requests.infoabouttrip.AboutTripDate;
 import GUI.requests.infoaboutwarehouse.DataAboutFlightsWithWarehouse;
 import GUI.requests.infoaboutwarehouse.DataAboutWarehouse;
 import GUI.requests.paymentinfo.PaymentData;
-import GUI.requests.popularexcursion.PopularExcursionData;
 
 import java.sql.*;
 import java.util.*;
@@ -72,7 +71,9 @@ public class DataBaseServer {
             );
             ResultSet result = statement.executeQuery(sql);
             result.next();
-            return result.getInt(1);
+            int res = result.getInt(1);
+            result.close();
+            return res;
 
         }
         catch (SQLException e) {
@@ -91,6 +92,7 @@ public class DataBaseServer {
                     ResultSet.CONCUR_UPDATABLE
             );
             ResultSet result = statement.executeQuery(sql);
+            result.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -111,6 +113,7 @@ public class DataBaseServer {
                     ResultSet.CONCUR_UPDATABLE
             );
             ResultSet result = statement.executeQuery(sql);
+            result.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -132,6 +135,7 @@ public class DataBaseServer {
                     ResultSet.CONCUR_UPDATABLE
             );
             ResultSet result = statement.executeQuery(sql);
+            result.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -150,6 +154,7 @@ public class DataBaseServer {
             ResultSet resultSet = statement.executeQuery(sql);
             resultSet.next();
             data = getClientFromResultat(resultSet);
+            resultSet.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -170,6 +175,7 @@ public class DataBaseServer {
             while(result.next()) {
                 warehouse.add(result.getString(1));
             }
+            result.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -190,6 +196,7 @@ public class DataBaseServer {
          while(result.next()) {
               hostels.add(result.getString(2));
            }
+            result.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -208,7 +215,9 @@ public class DataBaseServer {
             );
             ResultSet result = statement.executeQuery(sql);
             result.next();
-            return result.getInt(1);
+            int res = result.getInt(1);
+            result.close();
+            return res;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -237,6 +246,7 @@ public class DataBaseServer {
                 FlightData flightData = getFlightDataFromResultal(result);
                 list.add(flightData);
             }
+            result.close();
             return list;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -256,6 +266,7 @@ public class DataBaseServer {
             );
             ResultSet result = statement.executeQuery(sql);
              LinkedList<ExcursionData> list = convertData.parse_excursion_data(result);
+            result.close();
             return list;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -280,6 +291,7 @@ public class DataBaseServer {
                 FlightData flightData = getFlightDataFromResultal(result);
                 list.add(flightData);
             }
+            result.close();
             return list;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -302,6 +314,7 @@ public class DataBaseServer {
                 ClientData clientData = getClientFromResultat(result);
                 list.add(clientData);
             }
+            result.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -326,6 +339,7 @@ public class DataBaseServer {
                 ClientData clientData = getClientFromResultat(result);
                 list.add(clientData);
             }
+            result.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -350,6 +364,7 @@ public class DataBaseServer {
                 FlightData flightData = getFlightDataFromResultal(result);
                 list.add(flightData);
             }
+            result.close();
             return list;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -378,7 +393,9 @@ public class DataBaseServer {
             );
             ResultSet result = statement.executeQuery(sql);
             result.next();
-            return result.getInt(1);
+            int res = result.getInt(1);
+            result.close();
+            return res;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -405,28 +422,13 @@ public class DataBaseServer {
             );
             ResultSet result = statement.executeQuery(sql);
             result.next();
-            return result.getInt(1);
+            int res = result.getInt(1);
+            result.close();
+            return res;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return 0;
-    }
-
-    /* @return don't ready */
-    public LinkedList<CargoData> getCargoDataFromTrip(int tripID) {
-        LinkedList<CargoData> cargoList = new LinkedList<>();
-        try {
-            String sql = "select * from " + "CARGO_TOURIST " + "WHERE ID_TRIP = " + tripID;
-            Statement statement = null;
-            statement = connection.createStatement(
-                    ResultSet.TYPE_FORWARD_ONLY,
-                    ResultSet.CONCUR_UPDATABLE
-            );
-            ResultSet result = statement.executeQuery(sql);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return null;
     }
 
     /* @return вес груза в определенном путешествии */
@@ -445,6 +447,7 @@ public class DataBaseServer {
             if (result.next()) {
                 weight = result.getInt(1);
             }
+            result.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -480,6 +483,7 @@ public class DataBaseServer {
                 FlightData flightData = getFlightDataFromResultal(result);
                 list.add(flightData);
             }
+            result.close();
             return list;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -498,7 +502,9 @@ public class DataBaseServer {
             );
             ResultSet result = statement.executeQuery(sql);
             result.next();
-            return result.getString(1);
+            String res = result.getString(1);
+            result.close();
+            return res;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -575,7 +581,9 @@ public class DataBaseServer {
                     ResultSet.CONCUR_UPDATABLE
             );
             ResultSet result = statement.executeQuery(sql);
-            return convertData.parse_trip_one_data(result);
+            TripData data = convertData.parse_trip_one_data(result);
+            result.close();
+            return data;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -632,6 +640,7 @@ public class DataBaseServer {
                     ResultSet.CONCUR_UPDATABLE
             );
             ResultSet result = statement.executeQuery(sql);
+            result.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -643,8 +652,6 @@ public class DataBaseServer {
         int passengerFlightID = 0;
         int cargoFlightID = 0;
         String date = "";
-
-
 
         for (FlightData data : in) {
             if (data.getAirplaneData().isCargoPlane()) {
@@ -772,8 +779,8 @@ public class DataBaseServer {
                 shopTour = 1;
             }
             String sql = "DECLARE\n" +
-                    "    trans_name VARCHAR(500) := 'trans for hotel;\n" +
-                    "    is_shop_tour VARCHAR(1) := '" + shopTour +  "'';\n" +
+                    "    trans_name VARCHAR(500) := 'trans for hotel';\n" +
+                    "    is_shop_tour VARCHAR(1) := '" + shopTour +  "';\n" +
                     "    hotel_id int := " + getIdHostel(hotelInfo.getName()) +";\n" +
                     "    price_for_hotel int := " + hotelInfo.getPrice() + ";\n" +
                     "    id_client_val int := " + client.getId() + ";\n" +
@@ -787,8 +794,8 @@ public class DataBaseServer {
                     "    INSERT INTO TRANSACTIONS (NAME, IS_INCOME, SUM, ID_CLIENT) VALUES (trans_name, '1', price_for_hotel, id_client_val) " +
                     "returning ID into ident_trans_id;\n" +
                     "    INSERT INTO BOOKING_ROOM (ID_HOTEL, ID_TRANS) VALUES (hotel_id, ident_trans_id) returning ID into ident_booking_id;\n" +
-                    "    INSERT INTO TRIP (DATE_IN, DATE_OUT, BOOKING_ROOM_ID, ID_CLIENT, ID_GROUP, IS_SHOPTUR) VALUES  (date_in_val, date_out_val, " +
-                    "ident_booking_id, id_client_val, id_group, shopTour);\n" +
+                    "    INSERT INTO TRIP (DATE_IN, DATE_OUT, BOOKING_ROOM_ID, ID_CLIENT, ID_GROUP, IS_SHOPTUR) VALUES (date_in_val, date_out_val" +
+                    ",ident_booking_id, id_client_val, id_group, is_shop_tour);\n" +
                     "end;";
 //            System.out.println(sql);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -884,7 +891,6 @@ public class DataBaseServer {
                                 "     INSERT INTO TRANSACTIONS(NAME, IS_INCOME, SUM, ID_CLIENT) VALUES (trans_name, '1', wrap_val, id_client_val) returning ID into r_transaction_id;\n" +
                                 "     INSERT INTO CARGO_TOURIST(ID_TRIP, ID_CARGO, ID_TRANSACTION) VALUES (id_trip_val, r_cargo_id, r_transaction_id);\n" +
                                 "end;";
-//                                System.out.println(sql);
                         PreparedStatement preparedStatement = connection.prepareStatement(sql);
                         ResultSet result = preparedStatement.executeQuery();
                         result.close();
@@ -953,6 +959,103 @@ public class DataBaseServer {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
+        }
+    }
+
+    public LinkedList<CargoData> getCargoFromTrip(int idTrip) {
+        LinkedList<CargoData> cargoList = new LinkedList<>();
+        try {
+            String sql = "SELECT CARGO.ID, CARGO.ID_STATEMENT, CARGO.KIND, STATEMENT.COUNT, STATEMENT.COST_WRAP, STATEMENT.COST_INSURANCE,\n" +
+                    "STATEMENT.WEIGHT, STATEMENT.VOLUME FROM TRIP INNER JOIN CARGO_TOURIST ON TRIP.ID = CARGO_TOURIST.ID_TRIP\n" +
+                    "INNER JOIN CARGO ON CARGO_TOURIST.ID_CARGO = CARGO.ID INNER JOIN STATEMENT ON CARGO.ID_STATEMENT = STATEMENT.ID\n" +
+                    "WHERE TRIP.ID = " + idTrip;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                System.out.println("CARGO");
+                CargoData cargoData = new CargoData();
+                cargoData.setID(result.getInt(1));
+                cargoData.setStatementID(result.getInt(2));
+                cargoData.setKind(result.getString(3));
+                cargoData.setCount(result.getInt(4));
+                cargoData.setReal_wrap(result.getInt(5));
+                cargoData.setCost_insurance(result.getInt(6));
+                cargoData.setWeight(result.getInt(7));
+                cargoData.setVolume(result.getInt(8));
+                cargoList.add(cargoData);
+            }
+            result.close();
+            return cargoList;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return cargoList;
+    }
+
+    /*
+    * EDIT ZONE
+    * EDIT ZONE
+    * EDIT ZONE
+    * EDIT ZONE
+    * EDIT ZONE
+    * EDIT ZONE
+    * */
+
+    public void updateStatement(String columnName, String newValue, int id) {
+        try {
+            String sql = "UPDATE " + "STATEMENT" + " SET " +
+                    columnName + " = '" + newValue + "' WHERE " + "ID = " + id;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void updateKindInCargo(String newValue, int id) {
+        try {
+            String sql = "UPDATE " + "CARGO" + " SET KIND = '" + newValue + "' WHERE " + "ID = " + id;
+            System.out.println(sql);
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void removeCargo(int cargoID, int statementID) {
+        try {
+            String sql = "DECLARE\n" +
+                    "    delete_id int :=  " + cargoID +";\n" +
+                    "    delete_st_id int := " + statementID +";\n" +
+                    "begin\n" +
+                    "DELETE CARGO WHERE ID = delete_id;\n" +
+                    "DELETE STATEMENT WHERE ID = delete_st_id;\n" +
+                    "DELETE CARGO_TOURIST WHERE ID_CARGO = delete_id;\n" +
+                    "end;";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
     }
 

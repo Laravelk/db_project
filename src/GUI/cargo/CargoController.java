@@ -26,6 +26,7 @@ public class CargoController {
         view.getCostField().addActionListener(actionEvent -> {
             int insurance = (int) (Integer.parseInt(view.getCostField().getText()) * 0.1);
             model.getPrepareData().setCost_insurance(insurance);
+            model.getPrepareData().setReal_wrap(Integer.parseInt(view.getCostField().getText()));
             view.getCountTextField().setEnabled(true);
         });
 

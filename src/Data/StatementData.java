@@ -8,6 +8,7 @@ public class StatementData {
     private int cost_insurance;
     private int weight;
     private int volume;
+    private int id;
 
     public int getCount() {
         return count;
@@ -47,5 +48,13 @@ public class StatementData {
 
     public void setVolume(int volume) {
         this.volume = volume;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

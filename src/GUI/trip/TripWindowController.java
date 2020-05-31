@@ -2,6 +2,7 @@ package GUI.trip;
 
 import Data.TicketData;
 import Data.TripData;
+import GUI.edit.cargo.EditCargoController;
 import GUI.flight.FlightController;
 import GUI.requests.infoabouttrip.InfoAboutController;
 import Server.DataBaseServer;
@@ -21,7 +22,6 @@ public class TripWindowController {
         this.clientID = id;
         model = new TripModel(server);
         init(isFiltered, id);
-
     }
 
     void setSelectionId(int selectionId) {
@@ -35,7 +35,6 @@ public class TripWindowController {
                 if (mainTripWindow.isTableSelection()) {
                     int selectionID = mainTripWindow.getSelectionID();
                     TripData tripData = model.getTripDataByID(selectionID);
-                    selectionID = tripData.getID();
                     int cargoWeight = server.getWeightCargoByTripId(tripData.getID());
                     FlightController controller = new FlightController(server,
                             this, convertDate(tripData.getDateIn()), convertDate(tripData.getDateOut()), cargoWeight);
@@ -48,6 +47,13 @@ public class TripWindowController {
                     InfoAboutController controller = new InfoAboutController(server, selectionID);
                 }
             });
+
+            mainTripWindow.getEditCargo().addActionListener(actionEvent -> {
+                if (mainTripWindow.isTableSelection()) {
+                    EditCargoController editCargoController = new EditCargoController(server, selectionTrip);
+                }
+            });
+
             mainTripWindow.setVisible(true);
     }
 

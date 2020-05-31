@@ -32,7 +32,7 @@ public class MainTripWindow extends JFrame {
     }
 
     void initWindow() {
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600, 470);
         setLayout(new GridBagLayout());
 

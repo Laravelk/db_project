@@ -1,6 +1,7 @@
 package Data;
 
 public class CargoData {
+    private int ID;
     private String dateIn;
     private String dateOut;
     private String kind;
@@ -21,6 +22,14 @@ public class CargoData {
         statementData.setCount(count);
         statementData.setReal_wrap(real_wrap);
         statementData.setCost_insurance(cost_insurance);
+    }
+
+    public void setStatementID(int id) {
+        statementData.setId(id);
+    }
+
+    public int getStatementID() {
+        return statementData.getId();
     }
 
     public String getDateIn() {
@@ -93,5 +102,13 @@ public class CargoData {
 
     public int getVolume() {
         return statementData.getVolume();
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 }

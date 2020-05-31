@@ -17,8 +17,6 @@ import GUI.trip.TripWindowController;
 import GUI.addwindow.AddWindow;
 import Server.DataBaseServer;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -34,8 +32,10 @@ public class MainController {
 
         view.getAddDeclaration().addActionListener(actionEvent -> {
             if (view.isTableSelection()) {
+                int clientID = Integer.parseInt(String.valueOf(view.getTable().
+                        getModel().getValueAt(view.getTable().getSelectedRow(), 0)));
                 TripController tripController = new TripController(server,
-                        server.getClientData(view.getSelectionID()));
+                        server.getClientData(clientID));
             }
         });
 
@@ -91,8 +91,10 @@ public class MainController {
 
         view.getEditTrip().addActionListener(actionEvent -> {
             if (view.isTableSelection()) {
+                int clientID = Integer.parseInt(String.valueOf(view.getTable().
+                        getModel().getValueAt(view.getTable().getSelectedRow(), 0)));
                 TripWindowController controller =
-                        new TripWindowController(server, true, view.getSelectionID());
+                        new TripWindowController(server, true, clientID);
             } else {
                 TripWindowController controller = new TripWindowController(server,
                         false, 0);
@@ -150,16 +152,13 @@ public class MainController {
             filterArgs();
         });
 
-        view.getCategoryFilter().getWorkCheck().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                if (view.getCategoryFilter().getWorkCheck().isSelected()) {
-                    view.getCategoryFilter().getTravelCheck().setSelected(false);
-                }
-                view.setTableSelection(false);
-                view.getTable().getSelectionModel().clearSelection();
-                filterArgs();
+        view.getCategoryFilter().getWorkCheck().addActionListener(actionEvent -> {
+            if (view.getCategoryFilter().getWorkCheck().isSelected()) {
+                view.getCategoryFilter().getTravelCheck().setSelected(false);
             }
+            view.setTableSelection(false);
+            view.getTable().getSelectionModel().clearSelection();
+            filterArgs();
         });
     }
 
