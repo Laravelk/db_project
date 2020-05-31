@@ -3,6 +3,7 @@ package Server;
 import Data.*;
 import GUI.requests.dataaboutflight.AboutFlightData;
 import GUI.requests.financeaboutclient.TransactionData;
+import GUI.requests.infoaboutcargo.DataAboutCargo;
 import GUI.requests.infoabouttrip.AboutCargo;
 import GUI.requests.infoabouttrip.AboutExcursion;
 import GUI.requests.infoabouttrip.AboutTripDate;
@@ -1596,6 +1597,80 @@ public class DataBaseServer {
             throwables.printStackTrace();
         }
         return 0;
+    }
+
+    /* 12 */
+
+    private LinkedList<String> getName() {
+        LinkedList<String> names = new LinkedList<>();
+        try {
+            String sql = "SELECT DISTINCT CARGO.KIND FROM CARGO";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                names.add(result.getString(1));
+            }
+            result.close();
+            return names;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return names;
+    }
+
+    private DataAboutCargo getInfoAboutStream() {
+        DataAboutCargo aboutCargo = new DataAboutCargo("all",0.0f,0.0f, 0.0f);
+        try {
+            String sql = "SELECT SUM(STATEMENT.COUNT), SUM(STATEMENT.WEIGHT), SUM(STATEMENT.VOLUME) FROM STATEMENT";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            aboutCargo.setCount(result.getInt(1));
+            aboutCargo.setWeight(result.getInt(2));
+            aboutCargo.setVolume(result.getInt(3));
+            result.close();
+            return aboutCargo;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return aboutCargo;
+    }
+
+    public LinkedList<DataAboutCargo> getDataAboutCargosStream() {
+        LinkedList<DataAboutCargo> cargos = new LinkedList<>();
+        LinkedList<String> cargoName = getName();
+        DataAboutCargo infoAboutAllStream = getInfoAboutStream();
+        try {
+            for (String kind : cargoName) {
+                DataAboutCargo dataAboutCargo = new DataAboutCargo(kind, 0, 0, 0);
+                String sql = "SELECT SUM(STATEMENT.COUNT), SUM(STATEMENT.WEIGHT), SUM(STATEMENT.VOLUME) FROM CARGO INNER JOIN STATEMENT\n" +
+                        "ON CARGO.ID_STATEMENT = STATEMENT.ID WHERE KIND = '" + kind +"'";
+                Statement statement = null;
+                statement = connection.createStatement(
+                        ResultSet.TYPE_FORWARD_ONLY,
+                        ResultSet.CONCUR_UPDATABLE
+                );
+                ResultSet result = statement.executeQuery(sql);
+                result.next();
+                dataAboutCargo.setCount((double)result.getInt(1) / infoAboutAllStream.getCount());
+                dataAboutCargo.setWeight((double)result.getInt(2) / infoAboutAllStream.getWeight());
+                dataAboutCargo.setVolume((double)result.getInt(3) / infoAboutAllStream.getVolume());
+                result.close();
+                cargos.add(dataAboutCargo);
+            }
+            return cargos;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return cargos;
     }
 
     /*
