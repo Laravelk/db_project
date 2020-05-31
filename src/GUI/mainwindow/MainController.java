@@ -8,6 +8,7 @@ import GUI.requests.financeaboutclient.FinanceAboutClientController;
 import GUI.requests.hotellist.HotelRequestController;
 import GUI.requests.infoabouthotel.InfoAboutHotelController;
 import GUI.requests.infoaboutwarehouse.InfoAboutWarehouseController;
+import GUI.requests.paymentinfo.PaymentController;
 import GUI.requests.popularexcursion.PopularExcursionController;
 import GUI.trip.TripWindowController;
 import GUI.addwindow.AddWindow;
@@ -117,6 +118,10 @@ public class MainController {
 
         view.getRequestTen().addActionListener(actionEvent -> {
             FinanceAboutClientController controller = new FinanceAboutClientController(server);
+        });
+
+        view.getRequestEleven().addActionListener(actionEvent -> {
+            PaymentController controller = new PaymentController(server);
         });
 
         view.getSearchField().addActionListener(actionEvent -> {

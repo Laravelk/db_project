@@ -27,6 +27,7 @@ public class MainWindow extends JFrame {
     private JButton requestEight = new JButton("Info About Flight");
     private JButton requestNine = new JButton("Info About Warehouse");
     private JButton requestTen = new JButton("Info about payment");
+    private JButton requestEleven = new JButton("Info about profit");
     private boolean adminMode = false;
     private boolean isTableUpdating = false;
 
@@ -82,7 +83,7 @@ public class MainWindow extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 4;
-        constraints.gridheight = 12;
+        constraints.gridheight = 13;
         add(scrollTable, constraints);
 
         constraints = new GridBagConstraints();
@@ -140,6 +141,11 @@ public class MainWindow extends JFrame {
         constraints.gridx = 5;
         constraints.gridy = 11;
         add(requestTen, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 5;
+        constraints.gridy = 12;
+        add(requestEleven, constraints);
 
         //JDialog loginPage = createLoginDialog();
         //loginPage.setVisible(true);
@@ -434,5 +440,13 @@ public class MainWindow extends JFrame {
 
     public void setRequestTen(JButton requestTen) {
         this.requestTen = requestTen;
+    }
+
+    public JButton getRequestEleven() {
+        return requestEleven;
+    }
+
+    public void setRequestEleven(JButton requestEleven) {
+        this.requestEleven = requestEleven;
     }
 }

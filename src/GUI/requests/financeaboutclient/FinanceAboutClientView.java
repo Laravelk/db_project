@@ -32,7 +32,7 @@ public class FinanceAboutClientView extends JFrame {
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new GridBagLayout());
-        setSize(400,400);
+        setSize(300,200);
 
         GridBagConstraints constraints = new GridBagConstraints();
         JLabel groupLabel = new JLabel("Insert Group: ");

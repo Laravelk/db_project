@@ -8,6 +8,7 @@ import GUI.requests.infoabouttrip.AboutExcursion;
 import GUI.requests.infoabouttrip.AboutTripDate;
 import GUI.requests.infoaboutwarehouse.DataAboutFlightsWithWarehouse;
 import GUI.requests.infoaboutwarehouse.DataAboutWarehouse;
+import GUI.requests.paymentinfo.PaymentData;
 import GUI.requests.popularexcursion.PopularExcursionData;
 
 import java.sql.*;
@@ -1488,6 +1489,113 @@ public class DataBaseServer {
             throwables.printStackTrace();
         }
         return transactionData;
+    }
+
+    /* 11 */
+
+    public PaymentData getAirplanePaymentData(String dateIn, String dateOut) {
+        PaymentData data = new PaymentData(0,0);
+        try {
+            String sql = "SELECT SUM(TRANSACTIONS.SUM) FROM TICKETS INNER JOIN FLIGHT ON TICKETS.ID_FLIGHT = FLIGHT.ID\n" +
+                    "INNER JOIN TRANSACTIONS ON TICKETS.ID_TRANS = TRANSACTIONS.ID WHERE FLIGHT.FLY_DATE between\n" +
+                    "to_date('" + dateIn +"', 'dd.mm.yyyy') and to_date('" + dateOut + "', 'dd.mm.yyyy')";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            data.setPlus(result.getInt(1));
+            result.close();
+
+            String sql2 = "SELECT SUM(TRANSACTIONS.SUM) FROM TICKETS INNER JOIN FLIGHT ON TICKETS.ID_FLIGHT = FLIGHT.ID\n" +
+                    "INNER JOIN TRANSACTIONS ON FLIGHT.ID_TRANS = TRANSACTIONS.ID WHERE FLIGHT.FLY_DATE between\n" +
+                    "to_date('" + dateIn + "', 'dd.mm.yyyy') and to_date('" + dateOut + "', 'dd.mm.yyyy')";
+            ResultSet result2 = statement.executeQuery(sql2);
+            result2.next();
+            data.setMinus(result2.getInt(1));
+            result2.close();
+            return data;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return data;
+    }
+
+    public PaymentData getHostelPaymentData(String dateIn, String dateOut) {
+        PaymentData data = new PaymentData(0,0);
+        try {
+            String sql = "SELECT SUM(TRANSACTIONS.SUM) FROM TRIP INNER JOIN BOOKING_ROOM ON TRIP.BOOKING_ROOM_ID = BOOKING_ROOM.ID\n" +
+                    "INNER JOIN TRANSACTIONS ON BOOKING_ROOM.ID_TRANS = TRANSACTIONS.ID WHERE TRIP.DATE_IN\n" +
+                    "between to_date('" +  dateIn +"', 'dd.mm.yyyy') and to_date('" + dateOut + "', 'dd.mm.yyyy')\n" +
+                    "OR TRIP.DATE_OUT between to_date('" + dateIn + "', 'dd.mm.yyyy') and to_date('" + dateOut +"', 'dd.mm.yyyy')";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            data.setMinus(result.getInt(1));
+            data.setPlus((int)((double)data.getMinus() * 1.15f));
+            result.close();
+            return data;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return data;
+    }
+
+    public PaymentData getExcursionPaymentData(String dateIn, String dateOut) {
+        PaymentData data = new PaymentData(0,0);
+        try {
+            String sql = "SELECT SUM(TRANSACTIONS.SUM) FROM REST_TOURIST INNER JOIN EXCURSION ON REST_TOURIST.ID_EXCURSION = EXCURSION.ID\n" +
+                    "INNER JOIN TRANSACTIONS ON REST_TOURIST.ID_TRANS = TRANSACTIONS.ID WHERE\n" +
+                    "EXCURSION.DATE_EX between to_date('" + dateIn + "', 'dd.mm.yyyy') and to_date('"+ dateOut + "', 'dd.mm.yyyy')";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            data.setPlus(result.getInt(1));
+            result.close();
+
+            String sql2 = "SELECT SUM(TRANSACTIONS.SUM) FROM REST_TOURIST INNER JOIN EXCURSION ON REST_TOURIST.ID_EXCURSION = EXCURSION.ID\n" +
+                    "INNER JOIN TRANSACTIONS ON EXCURSION.TRANS_ID = TRANSACTIONS.ID WHERE\n" +
+                    "EXCURSION.DATE_EX between to_date('" + dateIn + "', 'dd.mm.yyyy') and to_date('" + dateOut +"', 'dd.mm.yyyy')";
+            ResultSet result2 = statement.executeQuery(sql2);
+            result2.next();
+            data.setMinus(result2.getInt(1));
+            result2.close();
+            return data;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return data;
+    }
+
+    public int getVisaProfit(String dateIn, String dateOut) {
+        try {
+            String sql = "SELECT COUNT(TRIP.ID), COUNT(CLIENTS.CHILDREN_ID) FROM CLIENTS INNER JOIN TRIP ON CLIENTS.ID = TRIP.ID_CLIENT\n" +
+                    "WHERE TRIP.DATE_IN between to_date('" + dateIn +"', 'dd.mm.yyyy') and to_date('" + dateOut +"', 'dd.mm.yyyy')\n" +
+                    "   OR TRIP.DATE_OUT between to_date('" + dateIn +"', 'dd.mm.yyyy') and to_date('" + dateOut +"', 'dd.mm.yyyy')";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            int sum = result.getInt(1) * 100 + result.getInt(2) * 120;
+             result.close();
+            return sum;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return 0;
     }
 
     /*
