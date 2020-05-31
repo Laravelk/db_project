@@ -160,13 +160,14 @@ public class CargoWindow extends JFrame {
         weightTextField = new JTextField(20);
         weightTextField.setEnabled(false);
         PlainDocument doc3 = (PlainDocument) weightTextField.getDocument();
-        doc.setDocumentFilter(new DigitFilter());
+        doc3.setDocumentFilter(new DigitFilter());
         constraints.gridx = 0;
         constraints.gridwidth = 2;
         constraints.gridy = 13;
         add(weightTextField, constraints);
 
         JLabel volumeLabel = new JLabel("Volume: ");
+        constraints.anchor = GridBagConstraints.WEST;
         constraints.gridx = 0;
         constraints.gridwidth = 2;
         constraints.gridy = 14;
@@ -175,8 +176,9 @@ public class CargoWindow extends JFrame {
         constraints = new GridBagConstraints();
         volumeTextField = new JTextField(20);
         volumeTextField.setEnabled(false);
+        constraints.anchor = GridBagConstraints.WEST;
         PlainDocument doc4 = (PlainDocument) volumeTextField.getDocument();
-        doc.setDocumentFilter(new DigitFilter());
+        doc4.setDocumentFilter(new DigitFilter());
         constraints.gridx = 0;
         constraints.gridwidth = 2;
         constraints.gridy = 15;

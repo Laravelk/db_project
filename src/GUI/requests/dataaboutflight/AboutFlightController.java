@@ -6,6 +6,7 @@ import Server.DataBaseServer;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
 public class AboutFlightController {
     private AboutFlightModel model;
@@ -17,6 +18,7 @@ public class AboutFlightController {
         view.getDateIn().addActionListener(actionEvent -> {
             view.updateTable(view.getDateIn().getText());
             view.getGetInfo().setEnabled(true);
+            view.getGetPassengerInfo().setEnabled(true);
         });
 
         view.getGetInfo().addActionListener(actionEvent -> {
@@ -26,6 +28,16 @@ public class AboutFlightController {
                         data.getAirplaneData().isCargoPlane());
                 AboutFlightInfoDialog dialog = new AboutFlightInfoDialog(this, data, aboutFlightData);
                 dialog.setVisible(true);
+            }
+        });
+
+        view.getGetPassengerInfo().addActionListener(actionEvent -> {
+            if (view.isSelected()) {
+                FlightData data = model.getFlightDataByID(view.getSelectedID());
+                if (!data.getAirplaneData().isCargoPlane()) {
+                    LinkedList<AboutPassengerData> passengerData = model.getPassengerDara(data.getID());
+                    AboutPassengersDialog aboutPassengersDialog = new AboutPassengersDialog(this, passengerData);
+                }
             }
         });
 

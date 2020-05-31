@@ -15,6 +15,7 @@ public class AboutFlightView extends JFrame {
     private JTable flightTable;
     private JFormattedTextField dateIn;
     private JButton getInfo;
+    private JButton getPassengerInfo = new JButton("Passenger info");
     private boolean isSelected;
     private int selectedID = -1;
     AboutFlightView(AboutFlightController controller) {
@@ -22,6 +23,8 @@ public class AboutFlightView extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(500,500);
         setLayout(new GridBagLayout());
+
+        setTitle("Информация о рейсе самолета");
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -44,6 +47,12 @@ public class AboutFlightView extends JFrame {
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         add(getInfo, constraints);
+
+        constraints = new GridBagConstraints();
+        getPassengerInfo.setEnabled(false);
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        add(getPassengerInfo, constraints);
 
         constraints = new GridBagConstraints();
         JScrollPane pane = new JScrollPane(getGoodExcursionTable());
@@ -127,5 +136,9 @@ public class AboutFlightView extends JFrame {
 
     public void setSelectedID(int selectedID) {
         this.selectedID = selectedID;
+    }
+
+    public JButton getGetPassengerInfo() {
+        return getPassengerInfo;
     }
 }

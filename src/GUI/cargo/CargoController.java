@@ -5,7 +5,7 @@ import Server.DataBaseServer;
 import java.text.ParseException;
 
 public class CargoController {
-    private CargoModel model;
+    private final CargoModel model;
     private CargoWindow view;
 
     public CargoController(DataBaseServer server, TripController tripController,
@@ -19,6 +19,7 @@ public class CargoController {
 
         view.getKindField().addActionListener(actionEvent -> {
             model.getPrepareData().setKind(view.getKindField().getText());
+            System.out.println("KIND");
             view.getCostField().setEnabled(true);
         });
 
@@ -34,7 +35,6 @@ public class CargoController {
         });
 
         view.getWeightTextField().addActionListener(actionEvent -> {
-            System.out.println("NEXT");
             model.getPrepareData().setWeight(Integer.parseInt(view.getWeightTextField().getText()));
             double insurance = Double.parseDouble(view.getCostField().getText()) * 0.1;
             view.getCostField().setText("Стоимость страховки " + String.valueOf
@@ -50,17 +50,12 @@ public class CargoController {
 
 
         view.getAddCargoButton().addActionListener(actionEvent -> {
-            view.getContentPane().removeAll();
             model.getPrepareData().setDateIn(dateIn);
             model.getPrepareData().setDateOut(dateOut);
             model.insertPrepareData();
             view.dispose();
-            try {
-                view = new CargoWindow(this, dateIn, dateOut);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            view.setVisible(true);
+            CargoController controller = new CargoController(server, tripController, dateIn, dateOut);
+            controller.setVisible(true);
         });
 
         view.getNextButton().addActionListener(actionEvent -> {

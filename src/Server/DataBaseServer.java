@@ -2,6 +2,7 @@ package Server;
 
 import Data.*;
 import GUI.requests.dataaboutflight.AboutFlightData;
+import GUI.requests.dataaboutflight.AboutPassengerData;
 import GUI.requests.financeaboutclient.TransactionData;
 import GUI.requests.infoaboutcargo.DataAboutCargo;
 import GUI.requests.infoabouttrip.AboutCargo;
@@ -663,10 +664,7 @@ public class DataBaseServer {
             changeFlightCargo(cargoFlightID, cargos, true);
         }
 
-        System.out.println("DATE IN " + date);
-
         changePeopleTicket(tripID, passengerFlightID, date);
-
         for (FlightData data : out) {
             if (data.getAirplaneData().isCargoPlane()) {
                 cargoFlightID = data.getID();
@@ -675,9 +673,6 @@ public class DataBaseServer {
             }
             date = convertData.convertDate(data.getData());
         }
-
-        System.out.println("DATE OUT " + date);
-
         if (-1 == cargoFlightID) {
             cargoFlightID = passengerFlightID;
         }
@@ -756,6 +751,7 @@ public class DataBaseServer {
                 System.out.println("CARGO " + result.getString(1));
                 cargo.add(result.getInt(1));
             }
+            result.close();
             return  cargo;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -797,6 +793,7 @@ public class DataBaseServer {
 //            System.out.println(sql);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet result = preparedStatement.executeQuery();
+            result.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -847,6 +844,7 @@ public class DataBaseServer {
                                 System.out.println(sql);
                                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                                 ResultSet result = preparedStatement.executeQuery();
+                                result.close();
                             } catch (SQLException throwables) {
                                 throwables.printStackTrace();
                             }
@@ -889,6 +887,7 @@ public class DataBaseServer {
 //                                System.out.println(sql);
                         PreparedStatement preparedStatement = connection.prepareStatement(sql);
                         ResultSet result = preparedStatement.executeQuery();
+                        result.close();
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -921,6 +920,7 @@ public class DataBaseServer {
                                 "    INSERT INTO TICKETS(ID_FLIGHT, ID_TRANS, ID_TOURIST, ID_TRIP) VALUES (id_flight_val, r_transaction_id, id_client_val, id_trip_val);\n" +
                                 "end;";
                         ResultSet resultSet = makeSql(sql);
+                        resultSet.close();
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -949,6 +949,7 @@ public class DataBaseServer {
 //                System.out.println(sql);
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet result = preparedStatement.executeQuery();
+                result.close();
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -1756,6 +1757,41 @@ public class DataBaseServer {
             throwables.printStackTrace();
         }
         return percent;
+    }
+
+    /* 15 */
+
+    public LinkedList<AboutPassengerData> getAboutPassengerData(int flightID) {
+        LinkedList<AboutPassengerData> data = new LinkedList<>();
+        try {
+            String sql = "SELECT CLIENTS.NAME, CLIENTS.LAST_NAME, TRIP.ID_GROUP, CARGO.ID, CARGO.KIND, STATEMENT.ID, HOTELS.NAME FROM TICKETS INNER JOIN FLIGHT ON TICKETS.ID_FLIGHT = FLIGHT.ID\n" +
+                    "INNER JOIN TRIP ON TICKETS.ID_TRIP = TRIP.ID INNER JOIN CARGO_TOURIST ON TRIP.ID = CARGO_TOURIST.ID_TRIP\n" +
+                    "INNER JOIN CARGO ON CARGO_TOURIST.ID_CARGO = CARGO.ID INNER JOIN STATEMENT ON CARGO.ID_STATEMENT = STATEMENT.ID\n" +
+                    "INNER JOIN BOOKING_ROOM ON TRIP.BOOKING_ROOM_ID = BOOKING_ROOM.ID INNER JOIN HOTELS ON BOOKING_ROOM.ID_HOTEL = HOTELS.ID INNER JOIN\n" +
+                    "CLIENTS ON TRIP.ID_CLIENT = CLIENTS.ID WHERE\n" +
+                    "FLIGHT.ID = " + flightID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                AboutPassengerData aboutPassengerData = new AboutPassengerData();
+                aboutPassengerData.setName(result.getString(1));
+                aboutPassengerData.setLastName(result.getString(2));
+                aboutPassengerData.setGroupNumber(result.getInt(3));
+                aboutPassengerData.setMark(result.getInt(4));
+                aboutPassengerData.setKind(result.getString(5));
+                aboutPassengerData.setBirk(result.getInt(6));
+                aboutPassengerData.setHotelName(result.getString(7));
+                data.add(aboutPassengerData);
+            }
+            return data;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return data;
     }
 
     /*

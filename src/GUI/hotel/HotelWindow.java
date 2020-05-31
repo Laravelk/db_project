@@ -14,14 +14,14 @@ public class HotelWindow extends JFrame {
     private final JFormattedTextField dateOut;
     private final JFormattedTextField dateIn;
     private final JComboBox<String> hotels = new JComboBox<String>();
-    private final JTextField groupField = new JTextField();
+    private final JTextField groupField = new JTextField(5);
     private Checkbox shopBox = new Checkbox("SHOP TOUR");
 
     private final JLabel priceInInt = new JLabel("");
 
     HotelWindow(HotelController controller) throws ParseException {
         this.controller = controller;
-        setMinimumSize(new Dimension(270, 210));
+        setMinimumSize(new Dimension(270, 250));
 
         setLayout(new GridBagLayout());
 

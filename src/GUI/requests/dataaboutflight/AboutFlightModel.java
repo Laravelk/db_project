@@ -31,4 +31,8 @@ public class AboutFlightModel {
         return flightData;
     }
 
+    LinkedList<AboutPassengerData> getPassengerDara(int flightID) {
+        return server.getAboutPassengerData(flightID);
+    }
+
 }
