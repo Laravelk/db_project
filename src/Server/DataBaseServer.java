@@ -1673,6 +1673,52 @@ public class DataBaseServer {
         return cargos;
     }
 
+    /* 13 */
+
+    private int getSumOfPlus() {
+        try {
+            String sql = "SELECT SUM(TRANSACTIONS.SUM) FROM TRANSACTIONS WHERE TRANSACTIONS.IS_INCOME = '1'";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            int count = result.getInt(1);
+            result.close();
+            return count;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return 1;
+    }
+
+    private int getSumOfMinus() {
+        try {
+            String sql = "SELECT SUM(TRANSACTIONS.SUM) FROM TRANSACTIONS WHERE TRANSACTIONS.IS_INCOME = '0'";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            int count = result.getInt(1);
+            result.close();
+            return count;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return 1;
+    }
+
+    public int getRent() {
+        double income = getSumOfPlus();
+        double noIncome = getSumOfMinus();
+        return (int)((income/ noIncome) * 100);
+    }
+
     /*
     * @return ResultSet by sql
     * */

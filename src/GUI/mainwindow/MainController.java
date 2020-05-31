@@ -1,6 +1,7 @@
 package GUI.mainwindow;
 
 import GUI.Controller.TripController;
+import GUI.requests.countRent.RentController;
 import GUI.requests.countofclientbydate.CountDialogController;
 import GUI.requests.dataaboutflight.AboutFlightController;
 import GUI.requests.excursionperiod.ExcursionPeriodController;
@@ -127,6 +128,10 @@ public class MainController {
 
         view.getRequestTwelve().addActionListener(actionEvent -> {
             InfoAboutCargoController controller = new InfoAboutCargoController(server);
+        });
+
+        view.getRequestThirteen().addActionListener(actionEvent -> {
+            RentController controller = new RentController(server);
         });
 
         view.getSearchField().addActionListener(actionEvent -> {
