@@ -6,6 +6,8 @@ import Server.DataBaseServer;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -54,6 +56,10 @@ public class HotelController {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+        });
+
+        view.getShopBox().addItemListener(itemEvent -> {
+            getModel().setShopTour(view.getShopBox().getState());
         });
 
         view.getGroupField().addActionListener(actionEvent -> {

@@ -771,8 +771,13 @@ public class DataBaseServer {
     * */
     private void insertTripAndHotel(HotelBookingInfo hotelInfo, ClientData client) {
         try {
+            int shopTour = 0;
+            if (hotelInfo.isShopTour()) {
+                shopTour = 1;
+            }
             String sql = "DECLARE\n" +
                     "    trans_name VARCHAR(500) := 'trans for hotel;\n" +
+                    "    is_shop_tour VARCHAR(1) := '" + shopTour +  "'';\n" +
                     "    hotel_id int := " + getIdHostel(hotelInfo.getName()) +";\n" +
                     "    price_for_hotel int := " + hotelInfo.getPrice() + ";\n" +
                     "    id_client_val int := " + client.getId() + ";\n" +
@@ -786,8 +791,8 @@ public class DataBaseServer {
                     "    INSERT INTO TRANSACTIONS (NAME, IS_INCOME, SUM, ID_CLIENT) VALUES (trans_name, '1', price_for_hotel, id_client_val) " +
                     "returning ID into ident_trans_id;\n" +
                     "    INSERT INTO BOOKING_ROOM (ID_HOTEL, ID_TRANS) VALUES (hotel_id, ident_trans_id) returning ID into ident_booking_id;\n" +
-                    "    INSERT INTO TRIP (DATE_IN, DATE_OUT, BOOKING_ROOM_ID, ID_CLIENT, ID_GROUP) VALUES  (date_in_val, date_out_val, " +
-                    "ident_booking_id, id_client_val, id_group);\n" +
+                    "    INSERT INTO TRIP (DATE_IN, DATE_OUT, BOOKING_ROOM_ID, ID_CLIENT, ID_GROUP, IS_SHOPTUR) VALUES  (date_in_val, date_out_val, " +
+                    "ident_booking_id, id_client_val, id_group, shopTour);\n" +
                     "end;";
 //            System.out.println(sql);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -1717,6 +1722,40 @@ public class DataBaseServer {
         double income = getSumOfPlus();
         double noIncome = getSumOfMinus();
         return (int)((income/ noIncome) * 100);
+    }
+
+    /* 14 */
+    public int getPercentOfShopTourToAnother(String dateIn, String dateOut) {
+        int percent = 0;
+        try {
+            String sql = "SELECT COUNT(TRIP.ID) FROM TRIP WHERE IS_SHOPTUR = '1' AND\n(" +
+                    "TRIP.DATE_IN between to_date('" + dateIn + "', 'dd.mm.yyyy') and to_date('" +  dateOut + "', 'dd.mm.yyyy')\n" +
+                    "OR TRIP.DATE_OUT between to_date('" + dateIn +"', 'dd.mm.yyyy') and to_date('" + dateOut +"', 'dd.mm.yyyy'))\n" +
+                    "UNION\n" +
+                    "SELECT COUNT(TRIP.ID) FROM TRIP WHERE IS_SHOPTUR = '0' AND\n(" +
+                    "TRIP.DATE_IN between to_date('" + dateIn +"', 'dd.mm.yyyy') and to_date('" + dateOut +"', 'dd.mm.yyyy')\n" +
+                    "OR TRIP.DATE_OUT between to_date('" + dateIn +"', 'dd.mm.yyyy') and to_date('" + dateOut +"', 'dd.mm.yyyy'))";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            double countShopTourist = 0;
+            double countJustTourist = 0;
+            for (int i = 0; i < 2; i++) {
+                result.next();
+                if (0 == i) {
+                    countShopTourist = result.getInt(1);
+                } else {
+                    countJustTourist = result.getInt(1);
+                }
+            }
+            return (int) (countJustTourist / countShopTourist * 100);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return percent;
     }
 
     /*

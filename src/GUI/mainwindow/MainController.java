@@ -12,6 +12,7 @@ import GUI.requests.infoabouthotel.InfoAboutHotelController;
 import GUI.requests.infoaboutwarehouse.InfoAboutWarehouseController;
 import GUI.requests.paymentinfo.PaymentController;
 import GUI.requests.popularexcursion.PopularExcursionController;
+import GUI.requests.shopclients.ShopClientsController;
 import GUI.trip.TripWindowController;
 import GUI.addwindow.AddWindow;
 import Server.DataBaseServer;
@@ -132,6 +133,10 @@ public class MainController {
 
         view.getRequestThirteen().addActionListener(actionEvent -> {
             RentController controller = new RentController(server);
+        });
+
+        view.getRequestFourteen().addActionListener(actionEvent -> {
+            ShopClientsController controller = new ShopClientsController(server);
         });
 
         view.getSearchField().addActionListener(actionEvent -> {

@@ -32,6 +32,8 @@ public class HotelModel {
 
     void setGroupNumber(int number) {hotelInfo.setGroupNumber(number);}
 
+    void setShopTour(boolean isShopTour) {hotelInfo.setShopTour(isShopTour);}
+
     public HotelBookingInfo getHotelInfo() {
         return hotelInfo;
     }

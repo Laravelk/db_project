@@ -15,12 +15,13 @@ public class HotelWindow extends JFrame {
     private final JFormattedTextField dateIn;
     private final JComboBox<String> hotels = new JComboBox<String>();
     private final JTextField groupField = new JTextField();
+    private Checkbox shopBox = new Checkbox("SHOP TOUR");
 
     private final JLabel priceInInt = new JLabel("");
 
     HotelWindow(HotelController controller) throws ParseException {
         this.controller = controller;
-        setMinimumSize(new Dimension(270, 170));
+        setMinimumSize(new Dimension(270, 210));
 
         setLayout(new GridBagLayout());
 
@@ -48,7 +49,6 @@ public class HotelWindow extends JFrame {
 
         constraints = new GridBagConstraints();
         JLabel price = new JLabel("Price Per Night: ");
-        price.setFont(new Font("TimesRoman", Font.BOLD, 16));
         constraints.gridy = 1;
         constraints.gridx = 0;
         add(price, constraints);
@@ -94,7 +94,6 @@ public class HotelWindow extends JFrame {
         constraints.gridy = 5;
         add(label, constraints);
 
-
         PlainDocument doc2 = (PlainDocument) groupField.getDocument();
         doc2.setDocumentFilter(new GUI.hotel.DigitFilter());
         constraints = new GridBagConstraints();
@@ -105,12 +104,17 @@ public class HotelWindow extends JFrame {
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 7;
+        add(shopBox, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 8;
         add(prevButton, constraints);
 
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
-        constraints.gridy = 7;
+        constraints.gridy = 8;
         add(nextButton, constraints);
     }
 
@@ -140,6 +144,10 @@ public class HotelWindow extends JFrame {
 
     public JTextField getGroupField() {
         return groupField;
+    }
+
+    public Checkbox getShopBox() {
+        return shopBox;
     }
 }
 

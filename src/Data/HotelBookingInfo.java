@@ -7,12 +7,14 @@ public class HotelBookingInfo {
     private String dateOut;
     private String name;
     private int groupNumber;
+    private boolean isShopTour = false;
 
-    public HotelBookingInfo(int price, String dateIn, String dateOut, String name, int groupNumber) {
+    public HotelBookingInfo(int price, String dateIn, String dateOut, String name, int groupNumber, boolean isShopTour) {
         this.price = price;
         this.dateIn = dateIn;
         this.dateOut = dateOut;
         this.groupNumber = groupNumber;
+        this.isShopTour = isShopTour;
     }
 
     public HotelBookingInfo() {}
@@ -55,5 +57,13 @@ public class HotelBookingInfo {
 
     public void setGroupNumber(int groupNumber) {
         this.groupNumber = groupNumber;
+    }
+
+    public boolean isShopTour() {
+        return isShopTour;
+    }
+
+    public void setShopTour(boolean shopTour) {
+        isShopTour = shopTour;
     }
 }

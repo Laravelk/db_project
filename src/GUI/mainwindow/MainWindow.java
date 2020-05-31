@@ -30,6 +30,7 @@ public class MainWindow extends JFrame {
     private JButton requestEleven = new JButton("Info about profit");
     private JButton requestTwelve = new JButton("Info about % cargo");
     private JButton requestThirteen = new JButton("Info % about income");
+    private JButton requestFourteen = new JButton("Relation shop/just tur");
     private boolean adminMode = false;
     private boolean isTableUpdating = false;
 
@@ -60,7 +61,7 @@ public class MainWindow extends JFrame {
         addDeclaration.setMinimumSize(new Dimension(100,20));
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1430, 540));
+        setMinimumSize(new Dimension(1430, 580));
         setLayout(new GridBagLayout());
 
 
@@ -85,7 +86,7 @@ public class MainWindow extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 4;
-        constraints.gridheight = 15;
+        constraints.gridheight = 16;
         add(scrollTable, constraints);
 
         constraints = new GridBagConstraints();
@@ -158,6 +159,11 @@ public class MainWindow extends JFrame {
         constraints.gridx = 5;
         constraints.gridy = 14;
         add(requestThirteen, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 5;
+        constraints.gridy = 15;
+        add(requestFourteen, constraints);
 
         //JDialog loginPage = createLoginDialog();
         //loginPage.setVisible(true);
@@ -476,5 +482,13 @@ public class MainWindow extends JFrame {
 
     public void setRequestThirteen(JButton requestThirteen) {
         this.requestThirteen = requestThirteen;
+    }
+
+    public JButton getRequestFourteen() {
+        return requestFourteen;
+    }
+
+    public void setRequestFourteen(JButton requestFourteen) {
+        this.requestFourteen = requestFourteen;
     }
 }
