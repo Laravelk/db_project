@@ -30,6 +30,8 @@ public class HotelModel {
         hotelInfo.setDateOut(dataOut);
     }
 
+    void setGroupNumber(int number) {hotelInfo.setGroupNumber(number);}
+
     public HotelBookingInfo getHotelInfo() {
         return hotelInfo;
     }

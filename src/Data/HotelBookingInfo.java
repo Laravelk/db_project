@@ -6,11 +6,13 @@ public class HotelBookingInfo {
     private String dateIn;
     private String dateOut;
     private String name;
+    private int groupNumber;
 
-    public HotelBookingInfo(int price, String dateIn, String dateOut, String name) {
+    public HotelBookingInfo(int price, String dateIn, String dateOut, String name, int groupNumber) {
         this.price = price;
         this.dateIn = dateIn;
         this.dateOut = dateOut;
+        this.groupNumber = groupNumber;
     }
 
     public HotelBookingInfo() {}
@@ -45,5 +47,13 @@ public class HotelBookingInfo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getGroupNumber() {
+        return groupNumber;
+    }
+
+    public void setGroupNumber(int groupNumber) {
+        this.groupNumber = groupNumber;
     }
 }

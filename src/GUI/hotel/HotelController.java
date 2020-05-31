@@ -4,6 +4,8 @@ import GUI.Controller.TripController;
 import Server.DataBaseServer;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -54,6 +56,10 @@ public class HotelController {
             }
         });
 
+        view.getGroupField().addActionListener(actionEvent -> {
+            getModel().setGroupNumber(Integer.parseInt(view.getGroupField().getText()));
+        });
+
         view.getPrevButton().addActionListener(actionEvent
                 -> {
             controller.changeWindow(controller.getWindowNumber() - 1);
@@ -63,6 +69,7 @@ public class HotelController {
                 controller.commitWindow(controller.getWindowNumber()  + 1);
                 view.dispose();
         });
+
 
         view.setVisible(false);
     }

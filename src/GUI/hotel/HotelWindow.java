@@ -1,7 +1,7 @@
 package GUI.hotel;
 
 import javax.swing.*;
-import javax.swing.text.MaskFormatter;
+import javax.swing.text.*;
 import java.awt.*;
 import java.text.ParseException;
 import java.util.LinkedList;
@@ -14,6 +14,7 @@ public class HotelWindow extends JFrame {
     private final JFormattedTextField dateOut;
     private final JFormattedTextField dateIn;
     private final JComboBox<String> hotels = new JComboBox<String>();
+    private final JTextField groupField = new JTextField();
 
     private final JLabel priceInInt = new JLabel("");
 
@@ -88,14 +89,28 @@ public class HotelWindow extends JFrame {
         add(dateOut, constraints);
 
         constraints = new GridBagConstraints();
+        JLabel label = new JLabel("Group Number: (def is 0) ");
         constraints.gridx = 0;
         constraints.gridy = 5;
+        add(label, constraints);
+
+
+        PlainDocument doc2 = (PlainDocument) groupField.getDocument();
+        doc2.setDocumentFilter(new GUI.hotel.DigitFilter());
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 6;
+        add(groupField, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 7;
         add(prevButton, constraints);
 
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
-        constraints.gridy = 5;
+        constraints.gridy = 7;
         add(nextButton, constraints);
     }
 
@@ -121,5 +136,28 @@ public class HotelWindow extends JFrame {
 
     public JComboBox<String> getHostels() {
         return hotels;
+    }
+
+    public JTextField getGroupField() {
+        return groupField;
+    }
+}
+
+class DigitFilter extends DocumentFilter {
+    private static final String DIGITS = "\\d+";
+
+    @Override
+    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException, BadLocationException {
+
+        if (string.matches(DIGITS)) {
+            super.insertString(fb, offset, string, attr);
+        }
+    }
+
+    @Override
+    public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attrs) throws BadLocationException {
+        if (string.matches(DIGITS)) {
+            super.replace(fb, offset, length, string, attrs);
+        }
     }
 }

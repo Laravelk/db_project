@@ -2,6 +2,7 @@ package Server;
 
 import Data.*;
 import GUI.requests.dataaboutflight.AboutFlightData;
+import GUI.requests.financeaboutclient.TransactionData;
 import GUI.requests.infoabouttrip.AboutCargo;
 import GUI.requests.infoabouttrip.AboutExcursion;
 import GUI.requests.infoabouttrip.AboutTripDate;
@@ -769,7 +770,7 @@ public class DataBaseServer {
     private void insertTripAndHotel(HotelBookingInfo hotelInfo, ClientData client) {
         try {
             String sql = "DECLARE\n" +
-                    "    trans_name VARCHAR(500) := 'trans for " + hotelInfo.getName() + "';\n" +
+                    "    trans_name VARCHAR(500) := 'trans for hotel;\n" +
                     "    hotel_id int := " + getIdHostel(hotelInfo.getName()) +";\n" +
                     "    price_for_hotel int := " + hotelInfo.getPrice() + ";\n" +
                     "    id_client_val int := " + client.getId() + ";\n" +
@@ -777,13 +778,14 @@ public class DataBaseServer {
                     "    ident_booking_id integer;\n" +
                     "    date_in_val date := to_date(' " + hotelInfo.getDateIn() + "', 'dd.mm.yyyy');\n" +
                     "    date_out_val date := to_date('" + hotelInfo.getDateOut() + "', 'dd.mm.yyyy');\n" +
+                    "    id_group int := " + hotelInfo.getGroupNumber() + ";\n" +
                     "    d int;\n" +
                     "begin\n" +
                     "    INSERT INTO TRANSACTIONS (NAME, IS_INCOME, SUM, ID_CLIENT) VALUES (trans_name, '1', price_for_hotel, id_client_val) " +
                     "returning ID into ident_trans_id;\n" +
                     "    INSERT INTO BOOKING_ROOM (ID_HOTEL, ID_TRANS) VALUES (hotel_id, ident_trans_id) returning ID into ident_booking_id;\n" +
-                    "    INSERT INTO TRIP (DATE_IN, DATE_OUT, BOOKING_ROOM_ID, ID_CLIENT) VALUES  (date_in_val, date_out_val, " +
-                    "ident_booking_id, id_client_val);\n" +
+                    "    INSERT INTO TRIP (DATE_IN, DATE_OUT, BOOKING_ROOM_ID, ID_CLIENT, ID_GROUP) VALUES  (date_in_val, date_out_val, " +
+                    "ident_booking_id, id_client_val, id_group);\n" +
                     "end;";
 //            System.out.println(sql);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -927,7 +929,7 @@ public class DataBaseServer {
                 String sql = "DECLARE\n" +
                         "    client_id int := " + client.getId() +";\n" +
                         "    excursion_id int :="  + excursionData.getExcursionID() + ";\n" +
-                        "    trans_name varchar(500) := 'trans for excursion ';\n" +
+                        "    trans_name varchar(500) := 'trans for excursion';\n" +
                         "    trip_id int;\n" +
                         "    r_sum int;\n" +
                         "    r_trans_id int;\n" +
@@ -1333,6 +1335,159 @@ public class DataBaseServer {
             throwables.printStackTrace();
         }
         return dataAboutFlightsWithWarehouse;
+    }
+
+    /* 10 */
+
+    public LinkedList<TransactionData> getExcursionClientsTransaction(int idGroup, boolean isOnlyWork, boolean isOnlyTravel) {
+        LinkedList<TransactionData> transactionData =  new LinkedList<>();
+        try {
+            String sql = "SELECT TRANSACTIONS.SUM, TRANSACTIONS.NAME, TRANSACTIONS.IS_INCOME FROM TRIP INNER JOIN CLIENTS ON TRIP.ID_CLIENT = CLIENTS.ID\n" +
+                    "INNER JOIN TRANSACTIONS ON CLIENTS.ID = TRANSACTIONS.ID_CLIENT WHERE TRANSACTIONS.NAME = 'trans for excursion '";
+            if (-1 != idGroup) {
+                sql += " AND TRIP.ID_GROUP = " + idGroup;
+            }
+            if (isOnlyWork) {
+                    sql += " AND CLIENTS.TRAVEL_TARGET = 'WORK'";
+            } else if (isOnlyTravel) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'TRAVEL'";
+            }
+
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()) {
+                boolean isIncome;
+                if ("0".equals(result.getString(3))) {
+                    isIncome = false;
+                } else {
+                    isIncome = true;
+                }
+                TransactionData transaction = new TransactionData(result.getInt(1), result.getString(2), isIncome);
+                transactionData.add(transaction);
+            }
+            result.close();
+            return transactionData;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return transactionData;
+    }
+
+    public LinkedList<TransactionData> getTicketTransaction(int idGroup, boolean isOnlyWork, boolean isOnlyTravel) {
+        LinkedList<TransactionData> transactionData =  new LinkedList<>();
+        try {
+            String sql = "SELECT TRANSACTIONS.SUM, TRANSACTIONS.NAME, TRANSACTIONS.IS_INCOME FROM TRIP INNER JOIN CLIENTS ON TRIP.ID_CLIENT = CLIENTS.ID\n" +
+                    "INNER JOIN TRANSACTIONS ON CLIENTS.ID = TRANSACTIONS.ID_CLIENT WHERE TRANSACTIONS.NAME = 'trans for passenger flight'";
+            if (-1 != idGroup) {
+                sql += " AND TRIP.ID_GROUP = " + idGroup;
+            }
+            if (isOnlyWork) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'WORK'";
+            } else if (isOnlyTravel) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'TRAVEL'";
+            }
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()) {
+                boolean isIncome;
+                if ("0".equals(result.getString(3))) {
+                    isIncome = false;
+                } else {
+                    isIncome = true;
+                }
+                TransactionData transaction = new TransactionData(result.getInt(1), result.getString(2), isIncome);
+                transactionData.add(transaction);
+            }
+            result.close();
+            return transactionData;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return transactionData;
+    }
+
+    public LinkedList<TransactionData> getTransForHotel(int idGroup, boolean isOnlyWork, boolean isOnlyTravel) {
+        LinkedList<TransactionData> transactionData =  new LinkedList<>();
+        try {
+            String sql = "SELECT TRANSACTIONS.SUM, TRANSACTIONS.NAME, TRANSACTIONS.IS_INCOME FROM TRIP INNER JOIN CLIENTS ON TRIP.ID_CLIENT = CLIENTS.ID\n" +
+                    "INNER JOIN TRANSACTIONS ON CLIENTS.ID = TRANSACTIONS.ID_CLIENT WHERE TRANSACTIONS.NAME = 'trans for hotel'";
+            if (-1 != idGroup) {
+                sql += " AND TRIP.ID_GROUP = " + idGroup;
+            }
+            if (isOnlyWork) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'WORK'";
+            } else if (isOnlyTravel) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'TRAVEL'";
+            }
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()) {
+                boolean isIncome;
+                if ("0".equals(result.getString(3))) {
+                    isIncome = false;
+                } else {
+                    isIncome = true;
+                }
+                TransactionData transaction = new TransactionData(result.getInt(1), result.getString(2), isIncome);
+                transactionData.add(transaction);
+            }
+            result.close();
+            return transactionData;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return transactionData;
+    }
+
+    public LinkedList<TransactionData> getTransForCargo(int idGroup, boolean isOnlyWork, boolean isOnlyTravel) {
+        LinkedList<TransactionData> transactionData =  new LinkedList<>();
+        try {
+            String sql = "SELECT TRANSACTIONS.SUM, TRANSACTIONS.NAME, TRANSACTIONS.IS_INCOME FROM TRIP INNER JOIN CLIENTS ON TRIP.ID_CLIENT = CLIENTS.ID\n" +
+                    "INNER JOIN TRANSACTIONS ON CLIENTS.ID = TRANSACTIONS.ID_CLIENT WHERE TRANSACTIONS.NAME = 'trans for cargo'";
+            if (-1 != idGroup) {
+                sql += " AND TRIP.ID_GROUP = " + idGroup;
+            }
+            if (isOnlyWork) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'WORK'";
+            } else if (isOnlyTravel) {
+                sql += " AND CLIENTS.TRAVEL_TARGET = 'TRAVEL'";
+            }
+            System.out.println(sql);
+
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()) {
+                boolean isIncome;
+                if ("0".equals(result.getString(3))) {
+                    isIncome = false;
+                } else {
+                    isIncome = true;
+                }
+                TransactionData transaction = new TransactionData(result.getInt(1), result.getString(2), isIncome);
+                transactionData.add(transaction);
+            }
+            result.close();
+            return transactionData;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return transactionData;
     }
 
     /*

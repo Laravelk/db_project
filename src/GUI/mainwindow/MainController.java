@@ -4,6 +4,7 @@ import GUI.Controller.TripController;
 import GUI.requests.countofclientbydate.CountDialogController;
 import GUI.requests.dataaboutflight.AboutFlightController;
 import GUI.requests.excursionperiod.ExcursionPeriodController;
+import GUI.requests.financeaboutclient.FinanceAboutClientController;
 import GUI.requests.hotellist.HotelRequestController;
 import GUI.requests.infoabouthotel.InfoAboutHotelController;
 import GUI.requests.infoaboutwarehouse.InfoAboutWarehouseController;
@@ -112,6 +113,10 @@ public class MainController {
 
         view.getRequestNine().addActionListener(actionEvent -> {
             InfoAboutWarehouseController controller = new InfoAboutWarehouseController(server);
+        });
+
+        view.getRequestTen().addActionListener(actionEvent -> {
+            FinanceAboutClientController controller = new FinanceAboutClientController(server);
         });
 
         view.getSearchField().addActionListener(actionEvent -> {
