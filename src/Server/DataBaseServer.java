@@ -531,10 +531,133 @@ public class DataBaseServer {
         return null;
     }
 
+    /* @return flight data for fligh admin */
+    public LinkedList<FlightData> getAllFlightData() {
+        LinkedList<FlightData> list = new LinkedList<>();
+        try {
+            String sql = "SELECT * FROM FLIGHT";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                FlightData data = new FlightData();
+                data.setID(result.getInt(1));
+                data.setData(convertData.convertDate(result.getString(2)));
+                data.getAirplaneData().setID(result.getInt(3));
+                data.setIdTrans(result.getInt(4));
+                list.add(data);
+            }
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return list;
+    }
+
+    /* insert airplane */
+    public void insertAirplane(AirplaneData airplaneData) {
+        try {
+            int b = 0;
+            if (airplaneData.isCargoPlane()) {
+                b = 1;
+            }
+            String sql = "DECLARE\n" +
+                    "    seat int := " + airplaneData.getSeatCount() +";\n" +
+                    "    weight int := " + airplaneData.getCargoWeight() + ";\n" +
+                    "    volume int := " + airplaneData.getVolumeWeight() + ";\n" +
+                    "    is_cargo varchar(1) := '" + b +"';\n" +
+                    "    begin\n" +
+                    "    INSERT INTO AIRPLANE (SEAT_COUNT, CARGO_WEIGHT, VOLUME_WEIGHT, IS_CARGOPLANE) VALUES (seat, weight, volume, is_cargo);\n" +
+                    "end;";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    /* insert a flight */
+    public void insertAFlight(FlightData data) {
+        try {
+            String sql = "DECLARE\n" +
+                    "    r_transaction_id int;\n" +
+                    "    start_date date := to_date(' " + data.getData() +"', 'dd.mm.yyyy');\n" +
+                    "    plain_id int := " + data.getAirplaneData().getID() + ";\n" +
+                    "begin\n" +
+                    "    INSERT INTO TRANSACTIONS (NAME, IS_INCOME, SUM) VALUES ('Buy a flight', '0', 15000)\n" +
+                    "    returning ID into r_transaction_id;\n" +
+                    "    INSERT INTO FLIGHT(FLY_DATE, AIRPLANE_ID, ID_TRANS) VALUES (start_date, plain_id, r_transaction_id);\n" +
+                    "end;\n";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    /* get all airplanes*/
+    public LinkedList<AirplaneData> getAllAirplane() {
+        LinkedList<AirplaneData> airplaneData = new LinkedList<>();
+        try {
+            String sql = "SELECT * from AIRPLANE";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                AirplaneData data = new AirplaneData();
+                data.setID(result.getInt(1));
+                data.setSeatCount(result.getInt(2));
+                data.setCargoWeight(result.getInt(3));
+                data.setVolumeWeight(result.getInt(4));
+                if ("0".equals(result.getString(5))) {
+                    data.setCargoPlane(false);
+                } else {
+                    data.setCargoPlane(true);
+                }
+                airplaneData.add(data);
+            }
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return airplaneData;
+    }
+
+    /* remove flight by id */
+    public void removeFlight(int flightID) {
+        try {
+            String sql = "DELETE FLIGHT WHERE FLIGHT.ID = " + flightID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
     /* @return board data by id */
     public AirplaneData getAirplaneDataByID(int airplane_ID) {
         try {
-            System.out.println(airplane_ID);
             String sql = "select * from " + "AIRPLANE" + " WHERE AIRPLANE.ID = " + airplane_ID;
             Statement statement = null;
             statement = connection.createStatement(

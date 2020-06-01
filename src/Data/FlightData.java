@@ -4,6 +4,7 @@ public class FlightData {
 
     private int ID;
     private String date;
+    private int idTrans;
     private AirplaneData airplaneData;
 
     public FlightData(int id, String date, AirplaneData airplaneData) {
@@ -12,7 +13,9 @@ public class FlightData {
         this.airplaneData = airplaneData;
     }
 
-    public FlightData() {}
+    public FlightData() {
+        airplaneData = new AirplaneData();
+    }
 
     public String getData() {
         return date;
@@ -46,5 +49,13 @@ public class FlightData {
                     this.getID() == data.getID();
         }
         return false;
+    }
+
+    public int getIdTrans() {
+        return idTrans;
+    }
+
+    public void setIdTrans(int idTrans) {
+        this.idTrans = idTrans;
     }
 }

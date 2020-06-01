@@ -1,7 +1,10 @@
 package GUI.mainwindow;
 
 import Data.ClientData;
+import GUI.flight.FlightController;
 import GUI.instruments.CategoryFilter;
+import GUI.mainwindowforflight.MainControllerForFlight;
+import GUI.mainwindowforflight.MainWindowForFlight;
 import Server.DataBaseServer;
 
 import javax.swing.*;
@@ -15,6 +18,9 @@ import java.util.Vector;
 public class MainWindow extends JFrame {
     private final String ADMIN_LOG = "admin";
     private final String ADMIN_PASSWORD = "admin";
+
+    private final String FLIGHT_LOG = "flight";
+    private final String FLIGHT_PASSWORD = "flight";
 
     private final JButton addPeople = new JButton("add people");
     private final JButton addDeclaration = new JButton("add declaration");
@@ -31,7 +37,6 @@ public class MainWindow extends JFrame {
     private JButton requestTwelve = new JButton("Info about % cargo");
     private JButton requestThirteen = new JButton("Info % about income");
     private JButton requestFourteen = new JButton("Relation shop/just tur");
-    private boolean adminMode = false;
     private boolean isTableUpdating = false;
 
     private boolean isTableSelection = false;
@@ -61,7 +66,7 @@ public class MainWindow extends JFrame {
         addDeclaration.setMinimumSize(new Dimension(100,20));
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1430, 580));
+        setMinimumSize(new Dimension(1430, 540));
         setLayout(new GridBagLayout());
 
 
@@ -165,9 +170,11 @@ public class MainWindow extends JFrame {
         constraints.gridy = 15;
         add(requestFourteen, constraints);
 
+
+        MainControllerForFlight controller1 = new MainControllerForFlight(server);
         //JDialog loginPage = createLoginDialog();
         //loginPage.setVisible(true);
-        setVisible(true);
+        //setVisible(true);
     }
 
     public void filterTableValue(String name, String lastName, String lastLastName, JTable table) {
@@ -270,10 +277,13 @@ public class MainWindow extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (ADMIN_LOG.equals(loginField.getText()) &&
                         ADMIN_PASSWORD.equals(passwordField.getText())) {
-                    adminMode = true;
                     loginDialog.dispose();
                     setVisible(true);
-                } else {
+                } else if (FLIGHT_LOG.equals(loginField.getText()) &&
+                            FLIGHT_PASSWORD.equals(loginField.getText()))  {
+                    loginDialog.dispose();
+                    MainControllerForFlight controller = new MainControllerForFlight(server);
+                }else{
                     invalidDataWarning.setVisible(true);
                 }
             }
