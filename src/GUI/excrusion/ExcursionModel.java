@@ -10,9 +10,9 @@ public class ExcursionModel {
     private LinkedList<ExcursionData> allExcursions = new LinkedList<>();
     final private DataBaseServer server;
 
-    ExcursionModel(DataBaseServer server) {
+    ExcursionModel(DataBaseServer server, String dateIn, String dateOut) {
         this.server = server;
-        allExcursions = server.getExcursion();
+        allExcursions = server.getExcursion(dateIn, dateOut);
     }
 
     public void addExcursion(ExcursionData excursion) {
@@ -29,6 +29,14 @@ public class ExcursionModel {
 
     public LinkedList<ExcursionData> getAllExcursions() {
         return allExcursions;
+    }
+
+    public void removeExcursionFromDataBase(int tripID, int excursionID) {
+        server.removeExcursion(tripID, excursionID);
+    }
+
+    public void addExcursionToDataBase(int tripID, int excursionID, int clientID) {
+        server.addExcursion(tripID, excursionID, clientID);
     }
 
     void clear() {

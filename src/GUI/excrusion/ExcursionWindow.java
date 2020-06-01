@@ -13,8 +13,9 @@ import java.util.Vector;
 public class ExcursionWindow extends JFrame {
     private final JButton addExcursion = new JButton("Add excursion");
     private final JButton removeExcursion = new JButton("Remove excursion");
-    private final JButton finishButton = new JButton("finish");
-    private final JButton prevButton = new JButton("prev");
+    private final JButton finishButton = new JButton("Finish");
+    private final JButton prevButton = new JButton("Prev");
+    private final JButton ok = new JButton("Ok");
     private JTable excursionTable;
 
     private final ExcursionController controller;
@@ -39,9 +40,9 @@ public class ExcursionWindow extends JFrame {
         return excursionTable;
     }
 
-    ExcursionWindow(LinkedList<ExcursionData> excursionData, ExcursionController controller) {
+    public ExcursionWindow(LinkedList<ExcursionData> excursionData, ExcursionController controller, boolean isOnlyAdd) {
         this.controller = controller;
-        setMinimumSize(new Dimension(1400, 800));
+        setMinimumSize(new Dimension(1400, 700));
         GridBagConstraints constraints = new GridBagConstraints();
 
         setLayout(new GridBagLayout());
@@ -68,20 +69,29 @@ public class ExcursionWindow extends JFrame {
         constraints = new GridBagConstraints();
         constraints.gridx = 4;
         constraints.gridy = 0;
+        constraints.fill = constraints.NORTH;
         add(addExcursion, constraints);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 4;
+        constraints.fill = constraints.NORTH;
         constraints.gridy = 1;
         add(removeExcursion, constraints);
 
-        constraints.gridx = 4;
-        constraints.gridy = 2;
-        add(finishButton, constraints);
+        if (isOnlyAdd) {
+            constraints.gridx = 4;
+            constraints.gridy = 2;
+            add(finishButton, constraints);
 
-        constraints.gridx = 4;
-        constraints.gridy = 3;
-        add(prevButton, constraints);
+            constraints.gridx = 4;
+            constraints.gridy = 3;
+            add(prevButton, constraints);
+        } else {
+            constraints.gridx = 4;
+            constraints.gridy = 2;
+            constraints.fill = constraints.NORTH;
+            add(ok, constraints);
+        }
     }
 
     private JTable createExcursionTable(LinkedList<ExcursionData> list) {
@@ -141,5 +151,9 @@ public class ExcursionWindow extends JFrame {
             data.add(row);
         }
         return data;
+    }
+
+    public JButton getOk() {
+        return ok;
     }
 }

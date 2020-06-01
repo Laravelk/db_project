@@ -121,7 +121,8 @@ public class TripController {
         }
 
         if (EXCURSION_WINDOW == numberOfWindows) {
-            excursionController = new ExcursionController(server, this);
+            excursionController = new ExcursionController(server, this, tripModel.getBookingInfo().getDateIn(),
+                    tripModel.getBookingInfo().getDateOut());
             excursionController.setVisible(true);
         }
 

@@ -3,6 +3,7 @@ package GUI.trip;
 import Data.TicketData;
 import Data.TripData;
 import GUI.edit.cargo.EditCargoController;
+import GUI.edit.excursion.EditExcursionController;
 import GUI.flight.FlightController;
 import GUI.requests.infoabouttrip.InfoAboutController;
 import Server.DataBaseServer;
@@ -51,6 +52,15 @@ public class TripWindowController {
             mainTripWindow.getEditCargo().addActionListener(actionEvent -> {
                 if (mainTripWindow.isTableSelection()) {
                     EditCargoController editCargoController = new EditCargoController(server, selectionTrip);
+                }
+            });
+
+            mainTripWindow.getEditExcursion().addActionListener(actionEvent -> {
+                int selectionID = mainTripWindow.getSelectionID();
+                if (mainTripWindow.isTableSelection()) {
+                    TripData tripData = model.getTripDataByID(selectionID);
+                    EditExcursionController controller = new EditExcursionController(server, selectionTrip, tripData.getDateIn(),
+                            tripData.getDateOut(), clientID);
                 }
             });
 

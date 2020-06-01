@@ -255,9 +255,9 @@ public class DataBaseServer {
     }
 
     /* @return all excursion */
-    public LinkedList<ExcursionData> getExcursion() {
+    public LinkedList<ExcursionData> getExcursion(String dateIn, String dateOut) {
         try {
-            String sql = "select * from EXCURSION";
+            String sql = "select * from EXCURSION WHERE DATE_EX between to_date('" + convertData.convertDate(dateIn) + "', 'dd.mm.yyyy') and to_date('" + convertData.convertDate(dateOut) + "', 'dd.mm.yyyy')";
             System.out.println(sql);
             Statement statement = null;
             statement = connection.createStatement(
@@ -996,6 +996,35 @@ public class DataBaseServer {
         return cargoList;
     }
 
+    public LinkedList<ExcursionData> getExcursionFromTrip(int idTrip) {
+        LinkedList<ExcursionData> excursionData = new LinkedList<>();
+        try {
+            String sql = "SELECT EXCURSION.ID, EXCURSION.ID_AGENCY, EXCURSION.DATE_EX, EXCURSION.TITLE, EXCURSION.RATE, EXCURSION.PRICE\n" +
+                    "FROM TRIP INNER JOIN REST_TOURIST ON TRIP.ID = REST_TOURIST.ID_TRIP INNER JOIN EXCURSION\n" +
+                    "ON REST_TOURIST.ID_EXCURSION = EXCURSION.ID WHERE TRIP.ID = " + idTrip;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                ExcursionData data = new ExcursionData();
+                data.setExcursionID(result.getInt(1));
+                data.setAgencyID(result.getInt(2));
+                data.setDate(result.getString(3));
+                data.setTitle(result.getString(4));
+                data.setRate(result.getInt(5));
+                data.setPrice(result.getInt(6));
+                excursionData.add(data);
+            }
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return excursionData;
+    }
+
     /*
     * EDIT ZONE
     * EDIT ZONE
@@ -1046,6 +1075,55 @@ public class DataBaseServer {
                     "DELETE CARGO WHERE ID = delete_id;\n" +
                     "DELETE STATEMENT WHERE ID = delete_st_id;\n" +
                     "DELETE CARGO_TOURIST WHERE ID_CARGO = delete_id;\n" +
+                    "end;";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void removeExcursion(int tripID, int excursionID) {
+        try {
+            String sql = "DECLARE\n" +
+                    "    deleted_trip_id int := " + tripID  + ";\n" +
+                    "    deleted_excursion_id int := " + excursionID +";\n" +
+                    "    r_trans int;\n" +
+                    "begin\n" +
+                    "SELECT REST_TOURIST.ID_TRANS into r_trans FROM REST_TOURIST WHERE ID_TRIP = deleted_trip_id AND ID_EXCURSION = deleted_excursion_id;\n" +
+                    "DELETE REST_TOURIST WHERE ID_TRIP = deleted_trip_id AND ID_EXCURSION = deleted_excursion_id;\n" +
+                    "DELETE TRANSACTIONS WHERE TRANSACTIONS.ID = r_trans;\n" +
+                    "end;";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void addExcursion(int tripID, int excursionID, int clientID) {
+        try {
+            String sql = "DECLARE\n" +
+                    "    trip_id int := " + tripID + ";\n" +
+                    "    client_id int := " + clientID + ";\n" +
+                    "    excursion_id int := " + excursionID + ";\n" +
+                    "    trans_name varchar(500) := 'trans for excursion';\n" +
+                    "    r_sum int;\n" +
+                    "    r_trans_id int;\n" +
+                    "begin\n" +
+                    "    SELECT PRICE INTO r_sum FROM EXCURSION WHERE EXCURSION.ID = excursion_id;\n" +
+                    "    INSERT INTO TRANSACTIONS(NAME, IS_INCOME, SUM, ID_CLIENT) VALUES (trans_name, '1', r_sum, client_id) returning ID into r_trans_id;\n" +
+                    "    INSERT INTO REST_TOURIST(ID_EXCURSION, ID_TRIP, ID_TRANS) VALUES (excursion_id, trip_id, r_trans_id);\n" +
                     "end;";
             Statement statement = null;
             statement = connection.createStatement(

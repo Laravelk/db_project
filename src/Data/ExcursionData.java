@@ -19,6 +19,8 @@ public class ExcursionData {
         this.price = price;
     }
 
+    public ExcursionData(){}
+
     public int getAgencyID() {
         return agencyID;
     }
@@ -65,5 +67,12 @@ public class ExcursionData {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        return excursionID == ((ExcursionData) obj).excursionID;
     }
 }
