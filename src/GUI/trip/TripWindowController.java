@@ -4,6 +4,7 @@ import Data.TicketData;
 import Data.TripData;
 import GUI.edit.cargo.EditCargoController;
 import GUI.edit.excursion.EditExcursionController;
+import GUI.edit.hotel.EditHotelController;
 import GUI.flight.FlightController;
 import GUI.requests.infoabouttrip.InfoAboutController;
 import Server.DataBaseServer;
@@ -61,6 +62,13 @@ public class TripWindowController {
                     TripData tripData = model.getTripDataByID(selectionID);
                     EditExcursionController controller = new EditExcursionController(server, selectionTrip, tripData.getDateIn(),
                             tripData.getDateOut(), clientID);
+                }
+            });
+
+            mainTripWindow.getEditBooking().addActionListener(actionEvent -> {
+                int selectionID = mainTripWindow.getSelectionID();
+                if (mainTripWindow.isTableSelection()) {
+                    EditHotelController controller = new EditHotelController(server, selectionTrip, clientID);
                 }
             });
 

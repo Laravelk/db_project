@@ -182,6 +182,26 @@ public class DataBaseServer {
         return warehouse;
     }
 
+    /* @return name of hotel */
+    public String getHotelByTrip(int idTrip) {
+        try {
+            String sql = "SELECT HOTELS.NAME FROM TRIP INNER JOIN BOOKING_ROOM ON TRIP.BOOKING_ROOM_ID = BOOKING_ROOM.ID\n" +
+                    "INNER JOIN HOTELS ON BOOKING_ROOM.ID_HOTEL = HOTELS.ID WHERE TRIP.ID = " + idTrip;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            String name = result.getString(1);
+            result.close();
+            return name;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return "";
+    }
+
     /* @return name of hostels */
     public LinkedList<String> getHotels() {
         LinkedList<String> hostels = new LinkedList<>();
@@ -1124,6 +1144,52 @@ public class DataBaseServer {
                     "    SELECT PRICE INTO r_sum FROM EXCURSION WHERE EXCURSION.ID = excursion_id;\n" +
                     "    INSERT INTO TRANSACTIONS(NAME, IS_INCOME, SUM, ID_CLIENT) VALUES (trans_name, '1', r_sum, client_id) returning ID into r_trans_id;\n" +
                     "    INSERT INTO REST_TOURIST(ID_EXCURSION, ID_TRIP, ID_TRANS) VALUES (excursion_id, trip_id, r_trans_id);\n" +
+                    "end;";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public int getBookingID(int tripID) {
+        int id = 0;
+        try {
+            String sql = "SELECT BOOKING_ROOM_ID FROM TRIP WHERE TRIP.ID = " + tripID;
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            id = result.getInt(1);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return id;
+    }
+
+    public void updateBookingInfo(int clientID, int newHotelID, int bookingID, int price) {
+        try {
+            String sql = "DECLARE\n" +
+                    "    trans_name VARCHAR(500) := 'trans for hotel';\n" +
+                    "    client_id int := " + clientID +";\n" +
+                    "    new_hotel_id int := " + newHotelID + ";\n" +
+                    "    booking_id int := " + bookingID +";\n" +
+                    "    r_sum int := " + price +";\n" +
+                    "    old_trans_id int;\n" +
+                    "    new_trans_id int;\n" +
+                    "begin\n" +
+                    "    SELECT BOOKING_ROOM.ID_TRIP into old_trans_id FROM BOOKING_ROOM WHERE BOOKING_ROOM.ID = booking_id;\n" +
+                    "    INSERT INTO TRANSACTIONS(NAME, IS_INCOME, SUM, ID_CLIENT) VALUES (trans_name, '1', r_sum, client_id) returning ID into new_trans_id;\n" +
+                    "    UPDATE BOOKING_ROOM SET ID_HOTEL = new_hotel_id, ID_TRANS = new_trans_id WHERE BOOKING_ROOM.ID = booking_id;\n" +
                     "end;";
             Statement statement = null;
             statement = connection.createStatement(
