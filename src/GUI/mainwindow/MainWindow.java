@@ -3,6 +3,7 @@ package GUI.mainwindow;
 import Data.ClientData;
 import GUI.flight.FlightController;
 import GUI.instruments.CategoryFilter;
+import GUI.mainexcursion.MainExcursionController;
 import GUI.mainwindowforflight.MainControllerForFlight;
 import GUI.mainwindowforflight.MainWindowForFlight;
 import Server.DataBaseServer;
@@ -21,6 +22,9 @@ public class MainWindow extends JFrame {
 
     private final String FLIGHT_LOG = "flight";
     private final String FLIGHT_PASSWORD = "flight";
+
+    private final String EXC_LOG = "ex";
+    private final String EXC_PASSWORD = "ex";
 
     private final JButton addPeople = new JButton("add people");
     private final JButton addDeclaration = new JButton("add declaration");
@@ -171,7 +175,9 @@ public class MainWindow extends JFrame {
         add(requestFourteen, constraints);
 
 
-        MainControllerForFlight controller1 = new MainControllerForFlight(server);
+
+        MainExcursionController controller1 = new MainExcursionController(server);
+        //MainControllerForFlight controller1 = new MainControllerForFlight(server);
         //JDialog loginPage = createLoginDialog();
         //loginPage.setVisible(true);
         //setVisible(true);
@@ -280,10 +286,13 @@ public class MainWindow extends JFrame {
                     loginDialog.dispose();
                     setVisible(true);
                 } else if (FLIGHT_LOG.equals(loginField.getText()) &&
-                            FLIGHT_PASSWORD.equals(loginField.getText()))  {
+                            FLIGHT_PASSWORD.equals(passwordField.getText()))  {
                     loginDialog.dispose();
                     MainControllerForFlight controller = new MainControllerForFlight(server);
-                }else{
+                }else if (EXC_LOG.equals(loginField.getText()) && EXC_PASSWORD.equals(passwordField.getText()))  {
+                    loginDialog.dispose();
+                    MainExcursionController controller = new MainExcursionController(server);
+                } else {
                     invalidDataWarning.setVisible(true);
                 }
             }

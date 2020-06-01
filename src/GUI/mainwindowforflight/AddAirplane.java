@@ -13,7 +13,7 @@ public class AddAirplane extends JDialog {
     private MainModelForFlight model;
     private JFormattedTextField seatCount = new JFormattedTextField(300);
     private JFormattedTextField cargoWeight = new JFormattedTextField(40000);
-    private JFormattedTextField volumeWeight = new JFormattedTextField(500000);
+    private JFormattedTextField volumeWeight = new JFormattedTextField(50000);
     private JCheckBox cargoPlane = new JCheckBox("CARGO");
     private JButton ok = new JButton("Add");
     AddAirplane(MainModelForFlight model) {
@@ -96,20 +96,3 @@ public class AddAirplane extends JDialog {
     }
 }
 
-class DigitFilter extends DocumentFilter {
-    private static final String DIGITS = "\\d+";
-    @Override
-    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException, BadLocationException {
-
-        if (string.matches(DIGITS)) {
-            super.insertString(fb, offset, string, attr);
-        }
-    }
-
-    @Override
-    public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attrs) throws BadLocationException {
-        if (string.matches(DIGITS)) {
-            super.replace(fb, offset, length, string, attrs);
-        }
-    }
-}

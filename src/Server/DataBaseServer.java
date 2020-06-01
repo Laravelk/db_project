@@ -272,6 +272,48 @@ public class DataBaseServer {
             throwables.printStackTrace();
         }
         return null;
+
+    }
+
+    /* remove excursion */
+    public void removeExcursion(ExcursionData data) {
+        try {
+            String sql = "DECLARE\n" +
+                    "    id_ex int := " + data.getExcursionID() +";\n" +
+                    "begin\n" +
+                    "DELETE REST_TOURIST WHERE ID_EXCURSION = id_ex;\n" +
+                    "DELETE EXCURSION WHERE ID = id_ex;\n" +
+                    "end;";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    /* @return all excursion */
+    public LinkedList<ExcursionData> getAllExcursion() {
+        try {
+            String sql = "select * from EXCURSION";
+            System.out.println(sql);
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            LinkedList<ExcursionData> list = convertData.parse_excursion_data(result);
+            result.close();
+            return list;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
     }
 
     /* @return all excursion */
@@ -582,6 +624,73 @@ public class DataBaseServer {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+    }
+
+    /* get all agency name */
+    public LinkedList<String> getAllAgency() {
+        LinkedList<String> names = new LinkedList<>();
+        try {
+            String sql = "Select AGENCY.NAME FROM AGENCY";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                names.add(result.getString(1));
+            }
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return names;
+    }
+
+    public void addExcursionData(ExcursionData data) {
+        try {
+            String sql = "DECLARE\n" +
+                    "    sum int := " + data.getPrice() +";\n" +
+                    "    date_ex date := to_date('" + data.getDate() +"', 'dd.mm.yyyy');\n" +
+                    "    agency_id int := " + data.getAgencyID() +";\n" +
+                    "    r_last_trans int;\n" +
+                    "    rate int := " + data.getRate() + ";\n" +
+                    "    title varchar(500) := '" + data.getTitle() + "';\n" +
+                    "begin\n" +
+                    "    INSERT INTO TRANSACTIONS (NAME, IS_INCOME, SUM) VALUES ('Расходы на организацию', '0', sum) returning ID into r_last_trans;\n" +
+                    "    INSERT INTO EXCURSION(ID_AGENCY, DATE_EX, TITLE, RATE, TRANS_ID, PRICE) VALUES (agency_id, date_ex, title, \n" +
+                    "                                                                                    rate, r_last_trans, sum / 4);\n" +
+                    "\n" +
+                    "end;";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public int getIdAgency(String name) {
+        int id = 0;
+        try {
+            String sql = "Select AGENCY.ID FROM AGENCY WHERE AGENCY.NAME = '" + name +"'";
+            Statement statement = null;
+            statement = connection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            id = result.getInt(1);
+            result.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return id;
     }
 
     /* insert a flight */
