@@ -20,7 +20,7 @@ public class AddFlight extends JDialog {
         this.model = model;
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new GridBagLayout());
-        setSize(100,100);
+        setSize(100,130);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.WEST;
@@ -65,6 +65,11 @@ public class AddFlight extends JDialog {
         constraints.gridwidth = 2;
         air.setEnabled(false);
         add(air, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        add(ok, constraints);
     }
 
     public JButton getOk() {

@@ -66,9 +66,6 @@ public class MainWindow extends JFrame {
         this.server = server;
         this.mainController = controller;
 
-        addPeople.setMinimumSize(new Dimension(100,20));
-        addDeclaration.setMinimumSize(new Dimension(100,20));
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1430, 540));
         setLayout(new GridBagLayout());
@@ -78,12 +75,12 @@ public class MainWindow extends JFrame {
         constraints.anchor = GridBagConstraints.WEST;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.gridwidth = 4;
+        constraints.gridwidth = 3;
         constraints.gridheight = 1;
         add(searchField, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 0;
         add(addPeople, constraints);
 
@@ -94,92 +91,90 @@ public class MainWindow extends JFrame {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.gridwidth = 4;
+        constraints.gridwidth = 3;
         constraints.gridheight = 16;
         add(scrollTable, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 1;
         add(addDeclaration, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 2;
         add(categoryFilter, constraints);
 
         constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.NORTH;
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 3;
         add(editTrip, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 4;
         add(requestSecond, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 5;
         add(requestThree, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 6;
         add(requestFive, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 7;
         add(requestSix, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 8;
         add(requestSeven, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 9;
         add(requestEight, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 10;
         add(requestNine, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 11;
         add(requestTen, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 12;
         add(requestEleven, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 13;
         add(requestTwelve, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 14;
         add(requestThirteen, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 15;
         add(requestFourteen, constraints);
 
 
 
-        MainExcursionController controller1 = new MainExcursionController(server);
-        //MainControllerForFlight controller1 = new MainControllerForFlight(server);
-        //JDialog loginPage = createLoginDialog();
-        //loginPage.setVisible(true);
+        JDialog loginPage = createLoginDialog();
+        loginPage.setVisible(true);
         //setVisible(true);
     }
 
@@ -343,7 +338,9 @@ public class MainWindow extends JFrame {
         listSelectionModel.addListSelectionListener(listSelectionEvent -> {
             isTableSelection = true;
             int selectionRow = listSelectionEvent.getLastIndex(); // потому что он совпадает с выбранной строкой
-            selectionID = Integer.parseInt(tableModel.getValueAt(selectionRow, 0).toString());
+            if (selectionRow != -1) {
+                selectionID = Integer.parseInt(tableModel.getValueAt(selectionRow, 0).toString());
+            }
         });
 
         // Setting table
@@ -435,6 +432,10 @@ public class MainWindow extends JFrame {
 
     public int getSelectionID() {
         return selectionID;
+    }
+
+    public void setSelectionID(int selectionID) {
+        this.selectionID = selectionID;
     }
 
     public JTable getTable() {

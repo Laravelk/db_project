@@ -21,7 +21,7 @@ public class HotelRequestView extends JFrame {
         this.controller = controller;
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        setSize(500, 400);
+        setSize(600, 450);
 
         setLayout(new GridBagLayout());
 

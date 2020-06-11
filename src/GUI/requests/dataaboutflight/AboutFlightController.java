@@ -46,6 +46,12 @@ public class AboutFlightController {
             int selectionRow = listSelectionEvent.getLastIndex();
             view.setSelectedID(Integer.parseInt(view.getFlightTable().getModel().getValueAt
                     (selectionRow, 0).toString()));
+            FlightData data = model.getFlightDataByID(view.getSelectedID());
+            if (data.getAirplaneData().isCargoPlane()) {
+                view.getGetPassengerInfo().setEnabled(false);
+            } else {
+                view.getGetPassengerInfo().setEnabled(true);
+            }
         });
         view.setVisible(true);
     }

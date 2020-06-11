@@ -149,6 +149,9 @@ public class MainController {
             if (view.getCategoryFilter().getTravelCheck().isSelected()) {
                 view.getCategoryFilter().getWorkCheck().setSelected(false);
             }
+            view.setTableSelection(false);
+            view.setSelectionID(-1);
+            view.getTable().getSelectionModel().clearSelection();
             filterArgs();
         });
 
@@ -158,8 +161,10 @@ public class MainController {
             }
             view.setTableSelection(false);
             view.getTable().getSelectionModel().clearSelection();
+            view.setSelectionID(-1);
             filterArgs();
         });
+        view.setResizable(true);
     }
 
     private void filterArgs() {
@@ -174,10 +179,6 @@ public class MainController {
         String[] information;
         information = text.split(" ");
 
-        if (0 == information.length) {
-            view.filterTableValue(null, null, null, view.getTable());
-        }
-
         if (1 == information.length) {
             view.filterTableValue(text, null, null, view.getTable());
         }
@@ -188,6 +189,10 @@ public class MainController {
 
         if (3 == information.length) {
             view.filterTableValue(information[0], information[1], information[2], view.getTable());
+        }
+
+        if (0 == information.length) {
+            view.filterTableValue(null, null, null, view.getTable());
         }
     }
 

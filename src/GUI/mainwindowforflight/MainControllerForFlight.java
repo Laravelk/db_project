@@ -24,6 +24,7 @@ public class MainControllerForFlight {
                 int flightID = Integer.parseInt(String.valueOf(view.getFlightTables().
                         getModel().getValueAt(view.getFlightTables().getSelectedRow(), 0)));
                 model.removeByID(flightID);
+                view.setTableUpdate(true);
                 view.updateTable();
             }
         });

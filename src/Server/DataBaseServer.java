@@ -29,7 +29,7 @@ public class DataBaseServer {
 
     private ConvertData  convertData = new ConvertData(this);
 
-    public DataBaseServer() throws SQLException {
+    public DataBaseServer(String ip, String userName, String password) throws SQLException {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
         }
@@ -37,13 +37,10 @@ public class DataBaseServer {
             e.printStackTrace();
         }
 
-        String dataBaseURL = "jdbc:oracle:thin:@localhost:1521:xe";
+        String dataBaseURL = "jdbc:oracle:thin:@" + ip +":1521:xe";
         Properties props = new Properties();
         props.setProperty("user", "system");
         props.setProperty("password", "oracle");
-
-        String userName = "system";
-        String password = "oracle";
 
         TimeZone timeZone = TimeZone.getTimeZone("GMT+7");
         TimeZone.setDefault(timeZone);
@@ -1451,6 +1448,9 @@ public class DataBaseServer {
     /* second request */
     public Vector<Vector<String>> secondRequest(Vector<String> hotelsNames, boolean isOnlyWork, boolean isOnlyTravel) {
         Vector<Vector<String>> data = new Vector<Vector<String>>();
+        if (hotelsNames == null || 0 ==  hotelsNames.size()) {
+            return data;
+        }
         try {
             String sql = "SELECT CLIENTS.NAME, CLIENTS.LAST_NAME, \n" +
                     "       CLIENTS.DOCUMENT_NUMBER, HOTELS.NAME, CLIENTS.TRAVEL_TARGET FROM  BOOKING_ROOM\n" +

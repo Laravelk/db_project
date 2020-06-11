@@ -13,7 +13,7 @@ public class ExcursionPeriodView extends JFrame {
 
     ExcursionPeriodView() {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(300,300);
+        setSize(300,100);
         setLayout(new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();

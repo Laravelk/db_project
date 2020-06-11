@@ -14,6 +14,7 @@ public class MainWindowForFlight  extends JFrame {
     private JTable flightTable;
 
     private boolean isTableSelection = false;
+    private boolean isTableUpdate = false;
     private int selectionID = -1;
     private final JButton getDataAboutFlight = new JButton("Get Data");
     private final JButton removeButton = new JButton("Remove");
@@ -96,9 +97,12 @@ public class MainWindowForFlight  extends JFrame {
 
         ListSelectionModel listSelectionModel = flightTable.getSelectionModel();
         listSelectionModel.addListSelectionListener(listSelectionEvent -> {
-            isTableSelection = true;
-            int selectionRow = listSelectionEvent.getFirstIndex();
-            selectionID = Integer.parseInt(defaultTableModel.getValueAt(selectionRow, 0).toString());
+            if (!isTableUpdate) {
+                isTableSelection = true;
+                int selectionRow = listSelectionEvent.getLastIndex();
+                selectionID = Integer.parseInt(String.valueOf(getFlightTables().
+                        getModel().getValueAt(getFlightTables().getSelectedRow(), 0)));
+            }
         });
 
         flightTable.setGridColor(Color.blue);
@@ -115,6 +119,8 @@ public class MainWindowForFlight  extends JFrame {
         for (int i = 0; i < data.size(); i++) {
             model.addRow(data.elementAt(i));
         }
+        flightTable.getSelectionModel().clearSelection();
+        isTableUpdate = false;
     }
 
     public JButton getAddPlane() {
@@ -151,5 +157,13 @@ public class MainWindowForFlight  extends JFrame {
 
     public JTable getFlightTables() {
         return flightTable;
+    }
+
+    public boolean isTableUpdate() {
+        return isTableUpdate;
+    }
+
+    public void setTableUpdate(boolean tableUpdate) {
+        isTableUpdate = tableUpdate;
     }
 }

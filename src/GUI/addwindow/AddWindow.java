@@ -21,7 +21,7 @@ public class AddWindow extends JFrame {
     public AddWindow(DataBaseServer server, String title, boolean childrenWindow) {
         this.server = server;
         setDefaultCloseOperation(HIDE_ON_CLOSE);
-        setMinimumSize(new Dimension(400, 500));
+        setMinimumSize(new Dimension(400, 300));
 
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();

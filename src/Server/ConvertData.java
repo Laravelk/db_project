@@ -43,8 +43,14 @@ public class ConvertData {
 
     String convertDate(String dateIn) {
         String str = dateIn.substring(0, 10);
+        System.out.println(str);
         String []d = str.split("-");
-        return d[2] + "." + d[1] + "." + d[0];
+        if (d.length >= 3) {
+            return d[2] + "." + d[1] + "." + d[0];
+        }
+        else {
+            return dateIn;
+        }
     }
 
     TripData parse_trip_one_data(ResultSet resultSet) throws SQLException {
